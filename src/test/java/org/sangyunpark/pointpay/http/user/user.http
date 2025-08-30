@@ -1,0 +1,17 @@
+### 올바른 유저 생성
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "username": "심하은",
+  "pointBalance": 0
+}
+
+### 올바르지 않은 유저 생성
+POST http://localhost:8080/api/user
+Content-Type: application/json
+
+{
+  "username" : "",
+  "pointBalance": 0
+}
