@@ -18,6 +18,16 @@ spring:
       hibernate:
         format_sql: true
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
 logging:
   level:
     root: info
