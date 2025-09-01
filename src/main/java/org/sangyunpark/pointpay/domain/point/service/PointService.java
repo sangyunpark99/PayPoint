@@ -1,11 +1,12 @@
 package org.sangyunpark.pointpay.domain.point.service;
 
-import jakarta.transaction.Transactional;
+import org.sangyunpark.pointpay.domain.point.dto.response.PointBalanceResponse;
 import org.sangyunpark.pointpay.error.BusinessException;
 import org.sangyunpark.pointpay.error.ErrorCode;
 import org.sangyunpark.pointpay.domain.user.entity.User;
 import org.sangyunpark.pointpay.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PointService {
@@ -23,7 +24,13 @@ public class PointService {
         final User user = findUser(userId);
         checkOverMaxPoint(user.getPointBalance(), addPoint);
 
-        // dirty check vs
+        // dirty check vs query update
+    }
+
+    @Transactional(readOnly = true)
+    public PointBalanceResponse getPointBalance(final long userId) {
+        final User user = findUser(userId);
+        return new PointBalanceResponse(userId, user.getPointBalance());
     }
 
     private void checkOverMaxPoint(final int userPoint, final int addPoint) {
