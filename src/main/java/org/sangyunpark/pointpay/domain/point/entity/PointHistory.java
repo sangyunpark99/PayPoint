@@ -1,8 +1,7 @@
-package org.sangyunpark.pointpay.point.entity;
+package org.sangyunpark.pointpay.domain.point.entity;
 
 import jakarta.persistence.*;
-import org.sangyunpark.pointpay.point.PointStatus;
-import org.sangyunpark.pointpay.user.entity.User;
+import org.sangyunpark.pointpay.domain.user.entity.User;
 
 import java.time.LocalDateTime;
 
