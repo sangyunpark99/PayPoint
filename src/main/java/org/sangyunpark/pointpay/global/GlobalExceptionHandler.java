@@ -1,5 +1,6 @@
 package org.sangyunpark.pointpay.global;
 
+import org.sangyunpark.pointpay.error.BusinessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
@@ -11,7 +12,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(exception = BusinessException.class)
     public ResponseEntity<?> handleBusinessException(final BusinessException e) {
-        return ResponseEntity.status(e.getStatusCode().value()).build();
+        return ResponseEntity.status(e.getStatusCode().value()).body(e.getMessage());
     }
 
     @ExceptionHandler(exception = BindException.class)
