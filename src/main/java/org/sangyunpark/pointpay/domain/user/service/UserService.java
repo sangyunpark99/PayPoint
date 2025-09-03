@@ -1,10 +1,10 @@
-package org.sangyunpark.pointpay.user.service;
+package org.sangyunpark.pointpay.domain.user.service;
 
 import jakarta.transaction.Transactional;
-import org.sangyunpark.pointpay.global.BusinessException;
-import org.sangyunpark.pointpay.global.ErrorCode;
-import org.sangyunpark.pointpay.user.entity.User;
-import org.sangyunpark.pointpay.user.repository.UserRepository;
+import org.sangyunpark.pointpay.error.BusinessException;
+import org.sangyunpark.pointpay.error.ErrorCode;
+import org.sangyunpark.pointpay.domain.user.entity.User;
+import org.sangyunpark.pointpay.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,7 +19,7 @@ public class UserService {
     @Transactional
     public void createUser(final String username, final int pointBalance) {
 
-        if(isDuplicateUsername(username)) {
+        if(isDuplicateUsername(username)) { // 유저의 이름 중복 여부 확인
             throw new BusinessException(ErrorCode.DUPLICATED_NICKNAME);
         }
 

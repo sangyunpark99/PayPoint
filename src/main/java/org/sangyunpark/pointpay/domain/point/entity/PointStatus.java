@@ -1,4 +1,4 @@
-package org.sangyunpark.pointpay.point;
+package org.sangyunpark.pointpay.domain.point.entity;
 
 public enum PointStatus {
 

@@ -1,7 +1,7 @@
-package org.sangyunpark.pointpay.user.entity;
+package org.sangyunpark.pointpay.domain.user.entity;
 
 import jakarta.persistence.*;
-import org.sangyunpark.pointpay.point.entity.PointHistory;
+import org.sangyunpark.pointpay.domain.point.entity.PointHistory;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
@@ -30,5 +30,9 @@ public class User {
         this.username = username;
         this.pointBalance = pointBalance;
         this.createdAt = LocalDateTime.now();
+    }
+
+    public int getPointBalance() {
+        return this.pointBalance;
     }
 }

@@ -1,0 +1,39 @@
+ services:
+   prometheus:
+     image: prom/prometheus
+     ports:
+       - "9090:9090"
+     volumes:
+       - ./monitor/prometheus.yml:/etc/prometheus/prometheus.yml
+     command:
+       - '--config.file=/etc/prometheus/prometheus.yml'
+       - '--storage.tsdb.path=/prometheus'
+       - '--storage.tsdb.retention.time=15d'
+
+   grafana:
+     image: grafana/grafana
+     ports:
+       - "3000:3000"
+     volumes:
+       - grafana-data:/var/lib/grafana
+
+   controller:
+     image: ngrinder/controller
+     restart: always
+     ports:
+       - "8000:80"
+       - "16001:16001"
+       - "12000-12009:12000-12009"
+     volumes:
+       - ./ngrinder-controller:/opt/ngrinder-controller
+
+   agent:
+     image: ngrinder/agent
+     restart: always
+     links:
+       - controller
+
+
+ volumes:
+   grafana-data:
+   prometheus-data:

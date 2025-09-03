@@ -1,8 +1,8 @@
-package org.sangyunpark.pointpay.user.controller;
+package org.sangyunpark.pointpay.domain.user.controller;
 
 import jakarta.validation.Valid;
-import org.sangyunpark.pointpay.user.dto.request.UserCreateRequest;
-import org.sangyunpark.pointpay.user.service.UserService;
+import org.sangyunpark.pointpay.domain.user.dto.request.UserCreateRequest;
+import org.sangyunpark.pointpay.domain.user.service.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

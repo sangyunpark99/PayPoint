@@ -1,4 +1,4 @@
-package org.sangyunpark.pointpay.user.dto.request;
+package org.sangyunpark.pointpay.domain.user.dto.request;
 
 import jakarta.validation.constraints.*;
 
