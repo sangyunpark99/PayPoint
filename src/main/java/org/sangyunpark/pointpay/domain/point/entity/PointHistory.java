@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Entity
 public class PointHistory {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
@@ -20,11 +20,14 @@ public class PointHistory {
 
     private LocalDateTime createdAt;
 
+    private int pointBalance;
+
     protected PointHistory() {}
 
-    public PointHistory(final User user, final PointStatus pointStatus) {
+    public PointHistory(final User user, final PointStatus pointStatus, final int pointBalance) {
         this.user = user;
         this.pointStatus = pointStatus;
         this.createdAt = LocalDateTime.now();
+        this.pointBalance = pointBalance;
     }
 }
