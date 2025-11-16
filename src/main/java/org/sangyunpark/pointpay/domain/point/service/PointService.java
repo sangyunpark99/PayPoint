@@ -36,11 +36,22 @@ public class PointService {
             backoff = @Backoff(delay = 40)
     )
     @Transactional
-    public void chargePoint(final long userId, final int addPoint) {
+    public void chargePoint(final long userId, final int pointAmount) { // 포인트 충전
         final User user = findUser(userId);
-        checkOverMaxPoint(user.getPointBalance(), addPoint);
+        user.chargePoint(pointAmount);
+        savePointHistory(user, PointStatus.CHARGE, pointAmount);
+    }
 
-        // dirty check vs query update
+    @Transactional
+    public void transferPoint(final long fromId, final long toId, final int pointAmount) {
+        final User fromUser = findUser(Math.min(fromId, toId));
+        final User toUser = findUser(Math.max(fromId, toId));
+
+        fromUser.usePoint(pointAmount);
+        toUser.chargePoint(pointAmount);
+
+        savePointHistory(toUser, PointStatus.CHARGE, pointAmount);
+        savePointHistory(fromUser, PointStatus.USE, pointAmount);
     }
 
     @Transactional(readOnly = true)
