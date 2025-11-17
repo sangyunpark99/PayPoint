@@ -5,7 +5,7 @@ import { randomSeed } from 'k6';
 randomSeed(1234);
 
 export const options = {
-    vus: 200,
+    vus: 500,
     duration: '60s',
     thresholds: { // 테스트 성공 판정 기준
         http_req_duration: ['p(95)<2000'], // 응답 시간의 95%가 2초 미만
