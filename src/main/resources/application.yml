@@ -5,7 +5,7 @@ spring:
     password: root
     hikari:
       minimum-idle: 5
-      maximum-pool-size: 25
+      maximum-pool-size: 30
       idle-timeout: 30000
       max-lifetime: 1800000
       connection-timeout: 30000
@@ -18,7 +18,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.MySQL8Dialect
+
+server:
+  tomcat:
+    threads:
+      max: 250
+    mbeanregistry:
+      enabled: true
 
 management:
   endpoints:
@@ -29,6 +35,9 @@ management:
     metrics:
       export:
         enabled: true
+  metrics:
+    enable:
+      tomcat: true
 
 logging:
   level:
