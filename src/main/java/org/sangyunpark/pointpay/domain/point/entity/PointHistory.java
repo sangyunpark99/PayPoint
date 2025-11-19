@@ -16,6 +16,9 @@ public class PointHistory {
     private User user;
 
     @Enumerated(EnumType.STRING)
+    private PointType pointType;
+
+    @Enumerated(EnumType.STRING)
     private PointStatus pointStatus;
 
     private LocalDateTime createdAt;
@@ -24,10 +27,23 @@ public class PointHistory {
 
     protected PointHistory() {}
 
-    public PointHistory(final User user, final PointStatus pointStatus, final int pointBalance) {
+    public PointHistory(final User user, final PointType type, final int pointBalance, final PointStatus status) {
         this.user = user;
-        this.pointStatus = pointStatus;
+        this.pointType = type;
         this.createdAt = LocalDateTime.now();
         this.pointBalance = pointBalance;
+        this.pointStatus = status;
+    }
+
+    public long getUserId() {
+        return this.user.getId();
+    }
+
+    public int getPointBalance() {
+        return this.pointBalance;
+    }
+
+    public void updateStatus(PointStatus status) {
+        this.pointStatus = status;
     }
 }
