@@ -1,6 +1,7 @@
 package org.sangyunpark.pointpay.domain.user.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import org.sangyunpark.pointpay.domain.point.entity.PointHistory;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -27,6 +28,10 @@ public class User {
     private static final int MAX_POINT = 2_100_000_000;
 
     protected User() {}
+
+    public User(final long userId) {
+        this.id = userId;
+    }
 
     public User(final String username, final int pointBalance) {
         this.username = username;
