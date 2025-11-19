@@ -3,6 +3,7 @@ package org.sangyunpark.pointpay.domain.point.service;
 import lombok.extern.slf4j.Slf4j;
 import org.sangyunpark.pointpay.domain.point.dto.response.PointBalanceResponse;
 import org.sangyunpark.pointpay.domain.point.entity.PointHistory;
+import org.sangyunpark.pointpay.domain.point.entity.PointType;
 import org.sangyunpark.pointpay.domain.point.entity.PointStatus;
 import org.sangyunpark.pointpay.domain.point.repository.PointHistoryRepository;
 import org.sangyunpark.pointpay.error.BusinessException;
@@ -11,11 +12,10 @@ import org.sangyunpark.pointpay.domain.user.entity.User;
 import org.sangyunpark.pointpay.domain.user.repository.UserRepository;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.awt.*;
 
 @Slf4j
 @Service
@@ -29,17 +29,25 @@ public class PointService {
         this.pointHistoryRepository = pointHistoryRepository;
     }
 
-
     @Retryable(
             retryFor = CannotAcquireLockException.class,
             maxAttempts = 3,
-            backoff = @Backoff(delay = 40)
+            backoff = @Backoff(delay = 40),
+            recover = "recoverChargePoint"
     )
     @Transactional
     public void chargePoint(final long userId, final int pointAmount) { // 포인트 충전
         final User user = findUser(userId);
         user.chargePoint(pointAmount);
-        savePointHistory(user, PointStatus.CHARGE, pointAmount);
+        savePointHistory(user, PointType.CHARGE, pointAmount, PointStatus.SUCCESS);
+    }
+
+    @Recover
+    @Transactional
+    public void recoverChargePoint(final CannotAcquireLockException e, final long userId, final int pointAmount) {
+        log.error("[Recover] DeadLock 재시도 실패 - userId = {}, pointAmount = {}", userId, pointAmount);
+        final User user = new User(userId);
+        savePointHistory(user, PointType.CHARGE, pointAmount, PointStatus.FAIL);
     }
 
     @Transactional
@@ -50,8 +58,8 @@ public class PointService {
         fromUser.usePoint(pointAmount);
         toUser.chargePoint(pointAmount);
 
-        savePointHistory(toUser, PointStatus.CHARGE, pointAmount);
-        savePointHistory(fromUser, PointStatus.USE, pointAmount);
+        savePointHistory(toUser, PointType.CHARGE, pointAmount, PointStatus.SUCCESS);
+        savePointHistory(fromUser, PointType.USE, pointAmount, PointStatus.SUCCESS);
     }
 
     @Transactional(readOnly = true)
@@ -60,8 +68,8 @@ public class PointService {
         return new PointBalanceResponse(userId, user.getPointBalance());
     }
 
-    private void savePointHistory(final User user, final PointStatus status, final int addPoint) {
-        PointHistory pointHistory = new PointHistory(user, status, addPoint);
+    private void savePointHistory(final User user, final PointType type, final int addPoint, final PointStatus status) {
+        PointHistory pointHistory = new PointHistory(user, type, addPoint, status);
         pointHistoryRepository.save(pointHistory);
     }
 
