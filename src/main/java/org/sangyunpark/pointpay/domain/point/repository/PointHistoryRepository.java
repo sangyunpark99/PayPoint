@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface PointHistoryRepository extends JpaRepository<PointHistory, Long> {
 
-    @Query("select ph from PointHistory ph where ph.pointStatus = :status")
+    @Query("select ph from PointHistory ph join fetch ph.user where ph.pointStatus = :status")
     List<PointHistory> findAllByStatus(PointStatus status);
 }
