@@ -31,7 +31,7 @@ public class PointService {
 
     @Retryable(
             retryFor = CannotAcquireLockException.class,
-            maxAttempts = 3,
+            maxAttempts = 1,
             backoff = @Backoff(delay = 40),
             recover = "recoverChargePoint"
     )
