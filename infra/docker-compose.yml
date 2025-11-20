@@ -94,6 +94,7 @@ services:
     environment:
       - K6_WEB_DASHBOARD=true
       - K6_WEB_DASHBOARD_EXPORT=/scripts/report.html
+      - TZ=Asia/Seoul
     ports:
       - "5665:5665"
     volumes:
