@@ -1,7 +1,6 @@
 package org.sangyunpark.pointpay.domain.user.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import org.sangyunpark.pointpay.domain.point.entity.PointHistory;
 import org.springframework.data.annotation.CreatedDate;
 
