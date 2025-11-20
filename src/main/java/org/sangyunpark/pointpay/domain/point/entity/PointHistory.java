@@ -11,7 +11,7 @@ public class PointHistory {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -35,8 +35,8 @@ public class PointHistory {
         this.pointStatus = status;
     }
 
-    public long getUserId() {
-        return this.user.getId();
+    public User getUser() {
+        return this.user;
     }
 
     public int getPointBalance() {
