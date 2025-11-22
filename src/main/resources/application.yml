@@ -8,13 +8,6 @@ spring:
       url: jdbc:mysql://mysql-slave:3306/pointpay
       username: root
       password: root
-
-    hikari:
-      minimum-idle: 5
-      maximum-pool-size: 30
-      idle-timeout: 30000
-      max-lifetime: 1800000
-      connection-timeout: 30000
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
