@@ -31,10 +31,18 @@ public class DatabaseConfig {
 
     @Bean
     public DataSource masterDataSource(@Qualifier("masterDataSourceProperties") DataSourceProperties properties){
-        return properties
-                .initializeDataSourceBuilder()
+
+        HikariDataSource dataSource = properties.initializeDataSourceBuilder()
                 .type(HikariDataSource.class)
                 .build();
+
+        dataSource.setMaximumPoolSize(100);
+        dataSource.setMinimumIdle(5);
+        dataSource.setIdleTimeout(30_000);
+        dataSource.setMaxLifetime(1_800_000);
+        dataSource.setConnectionTimeout(30_000);
+
+        return dataSource;
     }
 
     @Bean
