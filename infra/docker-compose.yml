@@ -92,14 +92,15 @@ services:
 
   mysqld-exporter:
     container_name: mysql-exporter
-    image: prom/mysqld-exporter
+    image: prom/mysqld-exporter:latest
     environment:
-      TZ : "Asia/Seoul"
+      TZ: "Asia/Seoul"
+      MYSQLD_EXPORTER_PASSWORD: "exporter_pass"
+    command:
+      - "--mysqld.address=mysql-master:3306"
+      - "--mysqld.username=exporter"
     ports:
       - "9104:9104"
-    command:
-      - "--mysqld.username=exporter:exporter_pass"
-      - "--mysqld.address=mysql:3306"
     restart: always
 
   prometheus:
