@@ -2,7 +2,6 @@ package org.sangyunpark.pointpay.domain.point.controller;
 
 import jakarta.validation.Valid;
 import org.sangyunpark.pointpay.domain.point.dto.request.PointAddRequest;
-import org.sangyunpark.pointpay.domain.point.dto.request.PointTransferRequest;
 import org.sangyunpark.pointpay.domain.point.dto.response.PointBalanceResponse;
 import org.sangyunpark.pointpay.domain.point.service.PointService;
 import org.springframework.web.bind.annotation.*;
@@ -20,11 +19,6 @@ public class PointController {
     @PostMapping("/charge")
     public void chargePoint(@RequestBody @Valid final PointAddRequest request) {
         pointService.chargePoint(request.getUserId(), request.getPoint());
-    }
-
-    @PostMapping("/transfer")
-    public void transferPoint(@RequestBody @Valid final PointTransferRequest request) {
-        pointService.transferPoint(request.getFromId(), request.getToId(), request.getPointAmount());
     }
 
     @GetMapping("/{userId}")
