@@ -16,7 +16,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class PointServiceConc0urrencyTest {
+class PointServiceConcurrencyTest {
 
     @Autowired
     private PointService pointService;
