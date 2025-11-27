@@ -20,3 +20,16 @@ CREATE TABLE user
 
 ALTER TABLE point_history
     ADD CONSTRAINT FK_POINTHISTORY_ON_USER FOREIGN KEY (user_id) REFERENCES user (id);
+
+CREATE INDEX idx_point_history_status
+    ON point_history(point_status);
+
+CREATE TABLE point_history_event
+(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    point_type VARCHAR(10) NOT NULL,
+    point_amount INT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    event_status VARCHAR(20) NOT NULL DEFAULT 'READY'
+)
