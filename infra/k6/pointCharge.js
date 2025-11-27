@@ -5,12 +5,16 @@ import { randomSeed } from 'k6';
 randomSeed(1234);
 
 export const options = {
-    vus: 500,
-    duration: '60s',
-    thresholds: { // 테스트 성공 판정 기준
-        http_req_duration: ['p(95)<2000'], // 응답 시간의 95%가 2초 미만
-        http_req_failed: ['rate<0.01'], // 전체 요청 중 실패율이 1% 미만
-    },
+    scenarios: {
+        constant_rate: {
+            executor: 'constant-arrival-rate',
+            rate: 3000,
+            timeUnit: '1s',
+            duration: '60s',
+            preAllocatedVUs: 500,
+            maxVUs:2000
+        }
+    }
 };
 
 function randomInt(min, max) {
@@ -31,7 +35,7 @@ export default function () {
         headers: {
             'Content-Type': 'application/json',
         },
-        timeout: '5s',
+        timeout: '1s',
     };
 
     const res = http.post(url, payload, params);
@@ -40,5 +44,5 @@ export default function () {
         'status is 200': (r) => r.status === 200,
     });
 
-    sleep(randomInt(50, 150) / 1000);
+    sleep(randomInt(0, 20) / 1000);
 }
