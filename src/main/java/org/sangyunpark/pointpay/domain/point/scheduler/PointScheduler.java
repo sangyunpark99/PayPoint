@@ -1,22 +1,29 @@
 package org.sangyunpark.pointpay.domain.point.scheduler;
 
 import lombok.extern.slf4j.Slf4j;
-import org.sangyunpark.pointpay.domain.point.entity.PointStatus;
-import org.sangyunpark.pointpay.domain.point.repository.PointHistoryRepository;
+import org.sangyunpark.pointpay.domain.event.entity.EventStatus;
+import org.sangyunpark.pointpay.domain.event.entity.PointHistoryEvent;
+import org.sangyunpark.pointpay.domain.event.service.PointEventService;
+import org.sangyunpark.pointpay.domain.point.entity.PointHistory;
+import org.sangyunpark.pointpay.domain.point.service.PointService;
+import org.sangyunpark.pointpay.domain.user.entity.User;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @Component
 public class PointScheduler {
 
-    private final PointHistoryRepository pointHistoryRepository;
+    private final PointEventService pointEventService;
+    private final PointService pointService;
 
-    public PointScheduler(PointHistoryRepository pointHistoryRepository) {
-        this.pointHistoryRepository = pointHistoryRepository;
+    public PointScheduler(PointEventService pointEventService, PointService pointService) {
+        this.pointEventService = pointEventService;
+        this.pointService = pointService;
     }
 
     @Scheduled(
@@ -24,11 +31,17 @@ public class PointScheduler {
     )
     @Transactional
     public void reprocessFailedPointCharge() {
-        List<Long> pointHistoryIds = pointHistoryRepository.findIdsByStatus(PointStatus.FAIL);
-        log.info("[PointScheduler] FAIL 상태인 포인트 충전 이력을 재처리 합니다. 대상 건수 = {}", pointHistoryIds.size());
-        if(!pointHistoryIds.isEmpty()) {
-            pointHistoryRepository.updateUserPoint(pointHistoryIds);
-            pointHistoryRepository.updatePointStatus(pointHistoryIds, PointStatus.SUCCESS);
+        List<PointHistoryEvent> pointHistoryEvents = pointEventService.getEventStatusIsReady();
+        log.info("[PointScheduler] FAIL 상태인 포인트 충전 이력을 재처리 합니다. 대상 건수 = {}", pointHistoryEvents.size());
+
+        ArrayList<PointHistory> pointHistories = new ArrayList<>(pointHistoryEvents.size());
+        for(PointHistoryEvent event : pointHistoryEvents) {
+            User user = new User(event.getUserId());
+            PointHistory history = PointHistory.fromEvent(event, user);
+            pointHistories.add(history);
+            event.updateEventStatus(EventStatus.FINISH);
         }
+
+        pointService.savePointHistories(pointHistories);
     }
 }
