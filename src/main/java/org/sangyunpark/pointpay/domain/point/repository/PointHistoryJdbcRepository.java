@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public class PointHistoryJdbcRepository {
 
+    private static final int BATCH_SIZE = 10_000;
     private final JdbcTemplate jdbcTemplate;
 
     public PointHistoryJdbcRepository(JdbcTemplate jdbcTemplate) {
@@ -25,7 +26,7 @@ public class PointHistoryJdbcRepository {
         jdbcTemplate.batchUpdate(
                 sql,
                 histories,
-                10000,
+                BATCH_SIZE,
                 (ps, history) -> {
                     ps.setInt(1, history.getPointBalance());
                     ps.setString(2, history.getPointStatus().name());
