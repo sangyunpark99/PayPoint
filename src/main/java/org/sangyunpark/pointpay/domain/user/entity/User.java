@@ -3,6 +3,8 @@ package org.sangyunpark.pointpay.domain.user.entity;
 import jakarta.persistence.*;
 import org.sangyunpark.pointpay.common.BaseEntity;
 import org.sangyunpark.pointpay.domain.point.entity.PointHistory;
+import org.sangyunpark.pointpay.error.BusinessException;
+import org.sangyunpark.pointpay.error.ErrorCode;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,8 +22,6 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user")
     private List<PointHistory> pointHistories = new ArrayList<>();
-
-    private static final int MAX_POINT = 2_100_000_000;
 
     protected User() {}
 
@@ -43,16 +43,10 @@ public class User extends BaseEntity {
         return this.pointBalance;
     }
 
-    public void chargePoint(final int addPointBalance) {
-        if(addPointBalance <= 0) {
-            throw new IllegalArgumentException("충전 금액은 0보다 커야 합니다.");
+    public void validatePointCharge(int pointAmount, int maxPoint) {
+        if(this.pointBalance + pointAmount >= maxPoint) {
+            throw new BusinessException(ErrorCode.POINT_LIMIT_EXCEED);
         }
-
-        if(this.pointBalance + addPointBalance > MAX_POINT) {
-            throw new IllegalArgumentException("최대 포인트 한도를 초과합니다.");
-        }
-
-        this.pointBalance += addPointBalance;
     }
 
     public void usePoint(final int minusPointBalance) {

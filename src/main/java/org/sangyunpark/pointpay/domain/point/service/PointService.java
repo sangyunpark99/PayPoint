@@ -33,10 +33,8 @@ public class PointService {
 
     @Transactional
     public void chargePoint(long userId, int pointAmount) {
-        boolean isExisted = userJpaRepository.existsById(userId);
-        if(!isExisted) {
-            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
-        }
+        User user = userJpaRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        user.validatePointCharge(pointAmount, MAX_POINT);
         userJpaRepository.increasePoint(userId, pointAmount, MAX_POINT);
         pointEventService.savePointEvent(userId, pointAmount, PointType.CHARGE);
     }
