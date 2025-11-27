@@ -4,34 +4,30 @@ import jakarta.transaction.Transactional;
 import org.sangyunpark.pointpay.error.BusinessException;
 import org.sangyunpark.pointpay.error.ErrorCode;
 import org.sangyunpark.pointpay.domain.user.entity.User;
-import org.sangyunpark.pointpay.domain.user.repository.UserRepository;
+import org.sangyunpark.pointpay.domain.user.repository.UserJpaRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserService(UserJpaRepository userJpaRepository) {
+        this.userJpaRepository = userJpaRepository;
     }
 
     @Transactional
     public void createUser(final String username, final int pointBalance) {
 
-        if(isDuplicateUsername(username)) { // 유저의 이름 중복 여부 확인
+        if(isDuplicateUsername(username)) {
             throw new BusinessException(ErrorCode.DUPLICATED_NICKNAME);
         }
 
         final User user = new User(username, pointBalance);
-        userRepository.save(user);
-    }
-
-    public User findUserById(long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        userJpaRepository.save(user);
     }
 
     private boolean isDuplicateUsername(final String username) {
-        return userRepository.existsByUsername(username);
+        return userJpaRepository.existsByUsername(username);
     }
 }
