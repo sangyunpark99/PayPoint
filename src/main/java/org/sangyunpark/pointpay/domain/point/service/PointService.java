@@ -7,7 +7,9 @@ import org.sangyunpark.pointpay.domain.point.entity.PointHistory;
 import org.sangyunpark.pointpay.domain.point.entity.PointType;
 import org.sangyunpark.pointpay.domain.point.repository.PointHistoryJdbcRepository;
 import org.sangyunpark.pointpay.domain.user.entity.User;
-import org.sangyunpark.pointpay.domain.user.service.UserService;
+import org.sangyunpark.pointpay.domain.user.repository.UserJpaRepository;
+import org.sangyunpark.pointpay.error.BusinessException;
+import org.sangyunpark.pointpay.error.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,20 +19,23 @@ import java.util.List;
 @Service
 public class PointService {
 
-    private final UserService userService;
+    private static final int MAX_POINT = 2_100_000_000;
+
+    private final UserJpaRepository userJpaRepository;
     private final PointHistoryJdbcRepository pointHistoryJdbcRepository;
     private final PointEventService pointEventService;
 
-    public PointService(UserService userService, PointEventService pointEventService, PointHistoryJdbcRepository pointHistoryJdbcRepository) {
-        this.userService = userService;
+    public PointService(UserJpaRepository userJpaRepository, PointEventService pointEventService, PointHistoryJdbcRepository pointHistoryJdbcRepository) {
+        this.userJpaRepository = userJpaRepository;
         this.pointEventService = pointEventService;
         this.pointHistoryJdbcRepository = pointHistoryJdbcRepository;
     }
 
     @Transactional
-    public void chargePoint(final long userId, final int pointAmount) {
-        User user = userService.findUserById(userId);
-        user.chargePoint(pointAmount);
+    public void chargePoint(long userId, int pointAmount) {
+        User user = userJpaRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        user.validatePointCharge(pointAmount, MAX_POINT);
+        userJpaRepository.increasePoint(userId, pointAmount, MAX_POINT);
         pointEventService.savePointEvent(userId, pointAmount, PointType.CHARGE);
     }
 
@@ -40,8 +45,8 @@ public class PointService {
     }
 
     @Transactional(readOnly = true)
-    public PointBalanceResponse getPointBalance(final long userId) {
-        final User user = userService.findUserById(userId);
+    public PointBalanceResponse getPointBalance(long userId) {
+        User user = userJpaRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         return new PointBalanceResponse(userId, user.getPointBalance());
     }
 }
