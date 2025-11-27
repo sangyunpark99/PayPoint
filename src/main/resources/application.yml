@@ -1,13 +1,8 @@
 spring:
   datasource:
-    master:
-      url: jdbc:mysql://mysql-master:3306/pointpay
-      username: root
-      password: root
-    slave:
-      url: jdbc:mysql://mysql-slave:3306/pointpay
-      username: root
-      password: root
+    url: jdbc:mysql://mysql-master:3306/pointpay
+    username: root
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
