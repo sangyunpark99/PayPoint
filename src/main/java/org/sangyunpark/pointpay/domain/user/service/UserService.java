@@ -27,6 +27,10 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public User findUserById(long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+    }
+
     private boolean isDuplicateUsername(final String username) {
         return userRepository.existsByUsername(username);
     }
