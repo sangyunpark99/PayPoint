@@ -1,16 +1,15 @@
 package org.sangyunpark.pointpay.domain.user.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
+import org.sangyunpark.pointpay.common.BaseEntity;
 import org.sangyunpark.pointpay.domain.point.entity.PointHistory;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class User {
+public class User extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,9 +20,6 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<PointHistory> pointHistories = new ArrayList<>();
-
-    @CreatedDate
-    private LocalDateTime createdAt;
 
     private static final int MAX_POINT = 2_100_000_000;
 
