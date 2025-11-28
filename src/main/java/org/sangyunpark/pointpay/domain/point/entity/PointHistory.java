@@ -29,7 +29,7 @@ public class PointHistory extends BaseEntity {
     protected PointHistory() {}
 
     @Builder
-    public PointHistory(final User user, final PointType pointType, final int pointBalance, final PointStatus pointStatus) {
+    public PointHistory(User user, PointType pointType, int pointBalance, PointStatus pointStatus) {
         this.user = user;
         this.pointType = pointType;
         this.createdAt = LocalDateTime.now();
