@@ -20,7 +20,6 @@ public class PointEventService {
 
     @Transactional
     public void savePointEvent(long userId, int pointBalance, PointType pointType) {
-
         PointHistoryEvent event = PointHistoryEvent.builder()
                 .userId(userId)
                 .pointAmount(pointBalance)
