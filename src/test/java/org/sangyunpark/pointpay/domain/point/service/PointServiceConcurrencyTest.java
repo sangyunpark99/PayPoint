@@ -2,11 +2,10 @@ package org.sangyunpark.pointpay.domain.point.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.sangyunpark.pointpay.common.ServiceTest;
 import org.sangyunpark.pointpay.domain.user.entity.User;
 import org.sangyunpark.pointpay.domain.user.repository.UserJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -14,9 +13,7 @@ import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@SpringBootTest
-@ActiveProfiles("test")
-class PointServiceConcurrencyTest {
+class PointServiceConcurrencyTest extends ServiceTest {
 
     @Autowired
     private PointService pointService;
