@@ -1,8 +1,8 @@
 package org.sangyunpark.pointpay.domain.user.service;
 
 import jakarta.transaction.Transactional;
-import org.sangyunpark.pointpay.error.BusinessException;
-import org.sangyunpark.pointpay.error.ErrorCode;
+import org.sangyunpark.pointpay.exception.BusinessException;
+import org.sangyunpark.pointpay.exception.ErrorCode;
 import org.sangyunpark.pointpay.domain.user.entity.User;
 import org.sangyunpark.pointpay.domain.user.repository.UserJpaRepository;
 import org.springframework.stereotype.Service;

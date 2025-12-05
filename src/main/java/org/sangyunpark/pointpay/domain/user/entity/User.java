@@ -3,8 +3,8 @@ package org.sangyunpark.pointpay.domain.user.entity;
 import jakarta.persistence.*;
 import org.sangyunpark.pointpay.common.BaseEntity;
 import org.sangyunpark.pointpay.domain.point.entity.PointHistory;
-import org.sangyunpark.pointpay.error.BusinessException;
-import org.sangyunpark.pointpay.error.ErrorCode;
+import org.sangyunpark.pointpay.exception.BusinessException;
+import org.sangyunpark.pointpay.exception.ErrorCode;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
