@@ -3,27 +3,28 @@ package org.sangyunpark.pointpay.domain.point.controller.dto.response;
 import lombok.Builder;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
-public class PointHistoriesResponse {
+public class PointHistoriesSummaryResponse {
 
-    private List<PointHistoryResponse> pointHistories;
+    private List<PointHistorySummaryResponse> pointHistories = new ArrayList<>();
 
-    public PointHistoriesResponse(List<PointHistoryResponse> response) {
+    public PointHistoriesSummaryResponse(List<PointHistorySummaryResponse> response) {
         this.pointHistories = response;
     }
 
-    public List<PointHistoryResponse> getPointHistories() {
+    public List<PointHistorySummaryResponse> getPointHistories() {
         return this.pointHistories;
     }
 
-    public static class PointHistoryResponse {
+    public static class PointHistorySummaryResponse {
         private long income;
         private long expense;
         private LocalDate date;
 
         @Builder
-        public PointHistoryResponse(long income, long expense, LocalDate date) {
+        public PointHistorySummaryResponse(long income, long expense, LocalDate date) {
             this.income = income;
             this.expense = expense;
             this.date = date;
