@@ -24,4 +24,6 @@ public interface PointHistoryJpaRepository extends JpaRepository<PointHistory, L
         ORDER BY DATE(ph.created_at)
     """, nativeQuery = true)
     List<PointHistoryProjection> findByDate(long userId, LocalDateTime startDate, LocalDateTime endDate);
+
+    List<PointHistory> findAllByUserIdAndCreatedAtBetween(Long userId, LocalDateTime startDate, LocalDateTime endDate);
 }
