@@ -1,13 +1,11 @@
 package org.sangyunpark.pointpay.domain.point.controller;
 
 import jakarta.validation.Valid;
-import org.sangyunpark.pointpay.domain.point.dto.request.PointAddRequest;
-import org.sangyunpark.pointpay.domain.point.dto.response.PointBalanceResponse;
-import org.sangyunpark.pointpay.domain.point.dto.response.PointHistoriesResponse;
+import org.sangyunpark.pointpay.domain.point.controller.dto.request.PointAddRequest;
+import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesResponse;
 import org.sangyunpark.pointpay.domain.point.service.PointService;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @RestController
@@ -26,7 +24,9 @@ public class PointController {
     }
 
     @GetMapping("/{userId}/histories")
-    public PointHistoriesResponse getPointHistoryOneDay(@PathVariable long userId, @RequestParam LocalDateTime startDate, @RequestParam LocalDateTime endDate) {
+    public PointHistoriesResponse getPointHistory(@PathVariable long userId, @RequestParam LocalDateTime startDate, @RequestParam LocalDateTime endDate) {
         return pointService.getPointHistories(userId, startDate, endDate);
     }
+
+
 }
