@@ -1,15 +1,15 @@
-package org.sangyunpark.pointpay.domain.point.cache;
+package org.sangyunpark.pointpay.domain.point.cache.key;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class PointHistoryCacheKey {
+public class PointHistorySummaryCacheKey {
 
     private final long userId;
     private final LocalDateTime startDate;
     private final LocalDateTime endDate;
 
-    public PointHistoryCacheKey(long userId, LocalDateTime startDate, LocalDateTime endDate) {
+    public PointHistorySummaryCacheKey(long userId, LocalDateTime startDate, LocalDateTime endDate) {
         this.userId = userId;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -30,7 +30,7 @@ public class PointHistoryCacheKey {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        PointHistoryCacheKey that = (PointHistoryCacheKey) o;
+        PointHistorySummaryCacheKey that = (PointHistorySummaryCacheKey) o;
         return userId == that.userId && Objects.equals(startDate, that.startDate) && Objects.equals(endDate, that.endDate);
     }
 
