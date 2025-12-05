@@ -2,10 +2,12 @@ package org.sangyunpark.pointpay.domain.point.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.sangyunpark.pointpay.domain.event.service.PointEventService;
-import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesResponse;
+import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesPerMonthResponse;
+import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesSummaryResponse;
 import org.sangyunpark.pointpay.domain.point.entity.PointHistory;
 import org.sangyunpark.pointpay.domain.point.entity.PointType;
 import org.sangyunpark.pointpay.domain.point.repository.PointHistoryJdbcRepository;
+import org.sangyunpark.pointpay.domain.point.repository.PointHistoryJpaRepository;
 import org.sangyunpark.pointpay.domain.user.entity.User;
 import org.sangyunpark.pointpay.domain.user.repository.UserJpaRepository;
 import org.sangyunpark.pointpay.exception.BusinessException;
@@ -46,12 +48,17 @@ public class PointService {
     }
 
     @Transactional(readOnly = true)
-    public PointHistoriesResponse getPointHistories(long userId, LocalDateTime startDate, LocalDateTime endDate) { // 어제 날짜까지 캐싱
-        return pointHistoryCacheService.getPointHistories(userId, startDate, endDate);
+    public PointHistoriesSummaryResponse getPointHistories(long userId, LocalDateTime startDate, LocalDateTime endDate) { // 어제 날짜까지 캐싱
+        return pointHistoryCacheService.getSummaryPointHistories(userId, startDate, endDate);
     }
 
     @Transactional
     public void savePointHistories(List<PointHistory> pointHistories) {
         pointHistoryJdbcRepository.batchInsert(pointHistories);
+    }
+
+    @Transactional(readOnly = true)
+    public PointHistoriesPerMonthResponse getPointHistoryDetailPerMonth(long userId, LocalDateTime startDate) {
+       return pointHistoryCacheService.getDetailPointHistoriesPerMonth(userId, startDate);
     }
 }
