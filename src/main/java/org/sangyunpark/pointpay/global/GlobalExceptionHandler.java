@@ -1,6 +1,6 @@
 package org.sangyunpark.pointpay.global;
 
-import org.sangyunpark.pointpay.error.BusinessException;
+import org.sangyunpark.pointpay.exception.BusinessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
