@@ -41,6 +41,10 @@ public class PointHistory extends BaseEntity {
         return this.pointBalance;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
+    }
+
     public PointType getPointType() {
         return this.pointType;
     }
