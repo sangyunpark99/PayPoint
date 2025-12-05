@@ -1,7 +1,11 @@
 package org.sangyunpark.pointpay.domain.point.service;
 
-import org.sangyunpark.pointpay.domain.point.cache.PointHistoryCacheManager;
-import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesResponse;
+import org.sangyunpark.pointpay.domain.point.cache.key.PointHistoryDetailCacheKey;
+import org.sangyunpark.pointpay.domain.point.cache.key.PointHistorySummaryCacheKey;
+import org.sangyunpark.pointpay.domain.point.cache.manager.PointHistoryDetailCacheManager;
+import org.sangyunpark.pointpay.domain.point.cache.manager.PointHistorySummaryCacheManager;
+import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesPerMonthResponse;
+import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesSummaryResponse;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -9,17 +13,30 @@ import java.time.LocalDateTime;
 @Service
 public class PointHistoryCacheService {
 
-    private final PointHistoryCacheManager cacheManager;
+    private final PointHistorySummaryCacheManager summaryCacheManager;
+    private final PointHistoryDetailCacheManager detailCacheManager;
 
-    public PointHistoryCacheService(PointHistoryCacheManager manager) {
-        this.cacheManager = manager;
+    public PointHistoryCacheService(PointHistorySummaryCacheManager summaryCacheManager, PointHistoryDetailCacheManager detailCacheManager) {
+        this.summaryCacheManager = summaryCacheManager;
+        this.detailCacheManager = detailCacheManager;
     }
 
-    public PointHistoriesResponse getPointHistories(long userId, LocalDateTime startDate, LocalDateTime endDate) {
-        PointHistoriesResponse response = cacheManager.load(userId, startDate, endDate);
+    public PointHistoriesSummaryResponse getSummaryPointHistories(long userId, LocalDateTime startDate, LocalDateTime endDate) {
+        PointHistorySummaryCacheKey key = new PointHistorySummaryCacheKey(userId, startDate, endDate);
+        PointHistoriesSummaryResponse response = summaryCacheManager.load(key);
         if(response != null) {
             return response;
         }
-        return cacheManager.loadAndCache(userId, startDate, endDate);
+        return summaryCacheManager.loadAndCache(key);
+    }
+
+    public PointHistoriesPerMonthResponse getDetailPointHistoriesPerMonth(long userId, LocalDateTime startDate) {
+        PointHistoryDetailCacheKey key = new PointHistoryDetailCacheKey(userId, startDate);
+        PointHistoriesPerMonthResponse response = detailCacheManager.load(key);
+        if(response != null) {
+            return response;
+        }
+
+        return detailCacheManager.loadAndCache(key);
     }
 }
