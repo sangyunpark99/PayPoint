@@ -15,11 +15,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesResponse.PointHistoryResponse;
 
 public class PointServiceTest extends ServiceTest {
 
     @Autowired
     private PointHistoryJpaRepository pointHistoryJpaRepository;
+
+    @Autowired
+    private PointService pointService;
 
     @Test
     @DisplayName("입력한 기간 내의 포인트 내역을 조회합니다.")
@@ -38,9 +42,12 @@ public class PointServiceTest extends ServiceTest {
         pointHistoryJpaRepository.saveAll(pointHistories);
 
         // when
-        List<PointHistory> getPointHistories = pointHistoryJpaRepository.findByDate(1L, startDate, endDate);
-
+        List<PointHistoryResponse> response = pointService.getPointHistories(1L, startDate, endDate).getPointHistories();
+        System.out.println(response);
         // then
-        assertThat(getPointHistories.size()).isEqualTo(3);
+        assertThat(response.size()).isEqualTo(1);
+        assertThat(response.get(0).getIncome()).isEqualTo(300);
+        assertThat(response.get(0).getExpense()).isEqualTo(600);
+        assertThat(response.get(0).getDate()).isEqualTo(startDate.toLocalDate());
     }
 }
