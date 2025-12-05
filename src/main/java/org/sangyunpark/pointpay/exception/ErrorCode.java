@@ -1,4 +1,4 @@
-package org.sangyunpark.pointpay.error;
+package org.sangyunpark.pointpay.exception;
 
 import org.springframework.http.HttpStatus;
 
