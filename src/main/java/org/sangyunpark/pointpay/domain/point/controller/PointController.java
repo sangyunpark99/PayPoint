@@ -2,7 +2,8 @@ package org.sangyunpark.pointpay.domain.point.controller;
 
 import jakarta.validation.Valid;
 import org.sangyunpark.pointpay.domain.point.controller.dto.request.PointAddRequest;
-import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesResponse;
+import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesPerMonthResponse;
+import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesSummaryResponse;
 import org.sangyunpark.pointpay.domain.point.service.PointService;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,9 +25,12 @@ public class PointController {
     }
 
     @GetMapping("/{userId}/histories")
-    public PointHistoriesResponse getPointHistory(@PathVariable long userId, @RequestParam LocalDateTime startDate, @RequestParam LocalDateTime endDate) {
+    public PointHistoriesSummaryResponse getPointHistory(@PathVariable long userId, @RequestParam LocalDateTime startDate, @RequestParam LocalDateTime endDate) {
         return pointService.getPointHistories(userId, startDate, endDate);
     }
 
-
+    @GetMapping("/{userId}/detail")
+    public PointHistoriesPerMonthResponse getPointHistoryDetail(@PathVariable long userId, @RequestParam LocalDateTime startDate) {
+        return pointService.getPointHistoryDetailPerMonth(userId, startDate);
+    }
 }
