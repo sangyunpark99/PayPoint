@@ -7,7 +7,6 @@ import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistor
 import org.sangyunpark.pointpay.domain.point.entity.PointHistory;
 import org.sangyunpark.pointpay.domain.point.entity.PointType;
 import org.sangyunpark.pointpay.domain.point.repository.PointHistoryJdbcRepository;
-import org.sangyunpark.pointpay.domain.point.repository.PointHistoryJpaRepository;
 import org.sangyunpark.pointpay.domain.user.entity.User;
 import org.sangyunpark.pointpay.domain.user.repository.UserJpaRepository;
 import org.sangyunpark.pointpay.exception.BusinessException;
