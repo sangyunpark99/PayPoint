@@ -1,5 +1,6 @@
 package org.sangyunpark.pointpay.domain.point.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.sangyunpark.pointpay.domain.event.service.PointEventService;
 import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesPerMonthResponse;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class PointService {
 
     private static final int MAX_POINT = 2_100_000_000;
@@ -27,16 +29,6 @@ public class PointService {
     private final PointHistoryJdbcRepository pointHistoryJdbcRepository;
     private final PointEventService pointEventService;
     private final PointHistoryCacheService pointHistoryCacheService;
-
-    public PointService(UserJpaRepository userJpaRepository,
-                        PointEventService pointEventService,
-                        PointHistoryJdbcRepository pointHistoryJdbcRepository,
-                        PointHistoryCacheService pointHistoryCacheService) {
-        this.userJpaRepository = userJpaRepository;
-        this.pointEventService = pointEventService;
-        this.pointHistoryJdbcRepository = pointHistoryJdbcRepository;
-        this.pointHistoryCacheService = pointHistoryCacheService;
-    }
 
     @Transactional
     public void chargePoint(long userId, int pointAmount) {
@@ -47,7 +39,7 @@ public class PointService {
     }
 
     @Transactional(readOnly = true)
-    public PointHistoriesSummaryResponse getPointHistories(long userId, LocalDateTime startDate, LocalDateTime endDate) { // 어제 날짜까지 캐싱
+    public PointHistoriesSummaryResponse getPointHistoriesSummary(long userId, LocalDateTime startDate, LocalDateTime endDate) {
         return pointHistoryCacheService.getSummaryPointHistories(userId, startDate, endDate);
     }
 
