@@ -1,5 +1,6 @@
 package org.sangyunpark.pointpay.domain.point.service;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.sangyunpark.pointpay.common.ServiceTest;
@@ -9,6 +10,8 @@ import org.sangyunpark.pointpay.domain.point.repository.PointHistoryJpaRepositor
 import org.sangyunpark.pointpay.domain.user.entity.User;
 import org.sangyunpark.pointpay.domain.user.repository.UserJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -30,6 +33,16 @@ public class PointServiceTest extends ServiceTest {
     @Autowired
     private PointService pointService;
 
+    @Autowired
+    private RedisConnectionFactory redisConnectionFactory;
+
+    @AfterEach
+    void cleanUp() {
+        try(RedisConnection con = redisConnectionFactory.getConnection()) {
+            con.serverCommands().flushDb();
+        }
+    }
+
     @Test
     @Transactional
     @DisplayName("입력한 기간 내의 포인트 내역을 조회합니다.")
@@ -49,7 +62,7 @@ public class PointServiceTest extends ServiceTest {
         pointHistoryJpaRepository.saveAll(pointHistories);
 
         // when
-        List<PointHistorySummaryResponse> response = pointService.getPointHistories(user.getId(), startDate, endDate).getPointHistories();
+        List<PointHistorySummaryResponse> response = pointService.getPointHistoriesSummary(user.getId(), startDate, endDate).getPointHistories();
         System.out.println(response);
         // then
         assertThat(response.size()).isEqualTo(1);
