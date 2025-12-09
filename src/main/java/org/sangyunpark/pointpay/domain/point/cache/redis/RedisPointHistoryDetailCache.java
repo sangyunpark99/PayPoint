@@ -5,7 +5,6 @@ import org.sangyunpark.pointpay.domain.point.cache.PointHistoryDetailCache;
 import org.sangyunpark.pointpay.domain.point.cache.loader.PointHistoryDetailDbLoader;
 import org.sangyunpark.pointpay.domain.point.cache.local.key.PointHistoryDetailCacheKey;
 import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesPerMonthResponse;
-import org.sangyunpark.pointpay.domain.user.repository.UserJpaRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -22,7 +21,6 @@ public class RedisPointHistoryDetailCache implements PointHistoryDetailCache{
 
     private final RedisTemplate<String, PointHistoriesPerMonthResponse> redisTemplate;
     private final PointHistoryDetailDbLoader loader;
-    private final UserJpaRepository userJpaRepository;
 
     private String buildKey(PointHistoryDetailCacheKey key) {
         long userId = key.getUserId();
