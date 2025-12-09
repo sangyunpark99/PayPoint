@@ -1,5 +1,6 @@
 package org.sangyunpark.pointpay.domain.point.repository;
 
+import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesPerMonthResponse;
 import org.sangyunpark.pointpay.domain.point.entity.PointHistory;
 import org.sangyunpark.pointpay.domain.point.repository.projection.PointHistoryProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,5 +26,17 @@ public interface PointHistoryJpaRepository extends JpaRepository<PointHistory, L
     """, nativeQuery = true)
     List<PointHistoryProjection> findByDate(long userId, LocalDateTime startDate, LocalDateTime endDate);
 
-    List<PointHistory> findAllByUserIdAndCreatedAtBetween(Long userId, LocalDateTime startDate, LocalDateTime endDate);
+    @Query("""
+    SELECT new org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesPerMonthResponse$PointHistoryPerMonth(
+        ph.pointBalance,
+        ph.pointType,
+        ph.createdAt
+    )
+    FROM PointHistory ph
+    WHERE ph.user.id = :userId
+      AND ph.createdAt >= :startDate
+      AND ph.createdAt <= :endDate
+""")
+    List<PointHistoriesPerMonthResponse.PointHistoryPerMonth>
+    findAllByUserIdAndCreatedAtBetween(Long userId, LocalDateTime startDate, LocalDateTime endDate);
 }
