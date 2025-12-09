@@ -46,7 +46,7 @@ management:
 
 cache:
   warmup:
-    enabled: true
+    enabled: false
 
 logging:
   level:
