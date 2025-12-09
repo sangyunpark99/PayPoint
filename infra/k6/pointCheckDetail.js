@@ -19,7 +19,7 @@ export default function () {
 
     const start = '2025-10-01T00:00:00';
 
-    const url = `http://host.docker.internal:8080/api/point/${userId}/detail?startDate=${start}`;
+    const url = `http://spring:8080/api/point/${userId}/detail?startDate=${start}`;
 
     const res = http.get(url, { timeout: '10s' });
 
