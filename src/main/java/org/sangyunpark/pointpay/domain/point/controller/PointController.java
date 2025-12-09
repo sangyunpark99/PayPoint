@@ -26,7 +26,7 @@ public class PointController {
 
     @GetMapping("/{userId}/histories")
     public PointHistoriesSummaryResponse getPointHistory(@PathVariable long userId, @RequestParam LocalDateTime startDate, @RequestParam LocalDateTime endDate) {
-        return pointService.getPointHistories(userId, startDate, endDate);
+        return pointService.getPointHistoriesSummary(userId, startDate, endDate);
     }
 
     @GetMapping("/{userId}/detail")
