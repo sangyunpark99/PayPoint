@@ -1,9 +1,9 @@
-package org.sangyunpark.pointpay.config.cache;
+package org.sangyunpark.pointpay.config.caffeine;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import org.sangyunpark.pointpay.domain.point.cache.key.PointHistoryDetailCacheKey;
-import org.sangyunpark.pointpay.domain.point.cache.key.PointHistorySummaryCacheKey;
+import org.sangyunpark.pointpay.domain.point.cache.local.key.PointHistoryDetailCacheKey;
+import org.sangyunpark.pointpay.domain.point.cache.local.key.PointHistorySummaryCacheKey;
 import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesPerMonthResponse;
 import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesSummaryResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
