@@ -1,7 +1,6 @@
 package org.sangyunpark.pointpay.domain.point.controller.dto.response;
 
 import lombok.Builder;
-import org.sangyunpark.pointpay.domain.point.entity.PointHistory;
 import org.sangyunpark.pointpay.domain.point.entity.PointType;
 
 import java.time.LocalDateTime;
@@ -10,6 +9,10 @@ import java.util.List;
 public class PointHistoriesPerMonthResponse {
 
     private List<PointHistoryPerMonth> pointHistories;
+
+    public PointHistoriesPerMonthResponse() {
+
+    }
 
     public PointHistoriesPerMonthResponse(List<PointHistoryPerMonth> pointHistories) {
         this.pointHistories = pointHistories;
@@ -21,22 +24,18 @@ public class PointHistoriesPerMonthResponse {
 
     public static class PointHistoryPerMonth {
         private int pointBalance;
-        private PointType type;
+        private PointType pointType;
         private LocalDateTime createdAt;
+
+        public PointHistoryPerMonth() {
+
+        }
 
         @Builder
         public PointHistoryPerMonth(int pointBalance, PointType type, LocalDateTime createdAt) {
             this.pointBalance = pointBalance;
-            this.type = type;
+            this.pointType = type;
             this.createdAt = createdAt;
-        }
-
-        public static PointHistoryPerMonth from(PointHistory pointHistory) {
-            return PointHistoryPerMonth.builder()
-                    .pointBalance(pointHistory.getPointBalance())
-                    .type(pointHistory.getPointType())
-                    .createdAt(pointHistory.getCreatedAt())
-                    .build();
         }
 
         public int getPointBalance() {
@@ -44,7 +43,7 @@ public class PointHistoriesPerMonthResponse {
         }
 
         public PointType getPointType() {
-            return this.type;
+            return this.pointType;
         }
 
         public LocalDateTime getCreatedAt() {
