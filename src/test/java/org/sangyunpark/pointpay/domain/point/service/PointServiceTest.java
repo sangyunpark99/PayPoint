@@ -9,6 +9,8 @@ import org.sangyunpark.pointpay.domain.point.entity.PointType;
 import org.sangyunpark.pointpay.domain.point.repository.PointHistoryJpaRepository;
 import org.sangyunpark.pointpay.domain.user.entity.User;
 import org.sangyunpark.pointpay.domain.user.repository.UserJpaRepository;
+import org.sangyunpark.pointpay.exception.BusinessException;
+import org.sangyunpark.pointpay.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -19,10 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesPerMonthResponse.PointHistoryPerMonth;
 import static org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesSummaryResponse.PointHistorySummaryResponse;
 
 public class PointServiceTest extends ServiceTest {
+
+    private static final int MAX_POINT = 2_100_000_000;
 
     @Autowired
     private PointHistoryJpaRepository pointHistoryJpaRepository;
@@ -98,5 +103,18 @@ public class PointServiceTest extends ServiceTest {
         assertThat(result.get(1).getPointType()).isEqualTo(PointType.USE);
         assertThat(result.get(2).getPointBalance()).isEqualTo(300);
         assertThat(result.get(2).getPointType()).isEqualTo(PointType.TRANSFER);
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("포인트 충전시 한도 금액을 초과하면 충전되지 않습니다.")
+    public void chargePointOverMaxBalance() {
+        User user = new User("test", MAX_POINT);
+        User savedUser = userJpaRepository.save(user);
+
+        assertThatThrownBy(() -> pointService.chargePoint(savedUser.getId(), 1))
+                .isInstanceOf(BusinessException.class)
+                .extracting("statusCode")
+                .isEqualTo(ErrorCode.POINT_LIMIT_EXCEED.getStatus());
     }
 }
