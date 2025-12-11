@@ -1,0 +1,6 @@
+GET http://localhost:8080/api/point/1/histories?startDate=2025-10-01T00:00:00&endDate=2025-10-30T00:00:00
+Content-Type: application/json
+
+###
+GET http://localhost:8080/api/point/2/detail?startDate=2025-10-01T00:00:00
+Content-Type: application/json

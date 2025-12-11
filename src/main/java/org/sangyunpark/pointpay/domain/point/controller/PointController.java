@@ -1,10 +1,13 @@
 package org.sangyunpark.pointpay.domain.point.controller;
 
 import jakarta.validation.Valid;
-import org.sangyunpark.pointpay.domain.point.dto.request.PointAddRequest;
-import org.sangyunpark.pointpay.domain.point.dto.response.PointBalanceResponse;
+import org.sangyunpark.pointpay.domain.point.controller.dto.request.PointAddRequest;
+import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesPerMonthResponse;
+import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesSummaryResponse;
 import org.sangyunpark.pointpay.domain.point.service.PointService;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/point")
@@ -17,12 +20,17 @@ public class PointController {
     }
 
     @PostMapping("/charge")
-    public void chargePoint(@RequestBody @Valid final PointAddRequest request) {
+    public void chargePoint(@RequestBody @Valid PointAddRequest request) {
         pointService.chargePoint(request.getUserId(), request.getPoint());
     }
 
-    @GetMapping("/{userId}")
-    public PointBalanceResponse getPointBalance(@PathVariable final long userId) {
-        return pointService.getPointBalance(userId);
+    @GetMapping("/{userId}/histories")
+    public PointHistoriesSummaryResponse getPointHistory(@PathVariable long userId, @RequestParam LocalDateTime startDate, @RequestParam LocalDateTime endDate) {
+        return pointService.getPointHistoriesSummary(userId, startDate, endDate);
+    }
+
+    @GetMapping("/{userId}/detail")
+    public PointHistoriesPerMonthResponse getPointHistoryDetail(@PathVariable long userId, @RequestParam LocalDateTime startDate) {
+        return pointService.getPointHistoryDetailPerMonth(userId, startDate);
     }
 }

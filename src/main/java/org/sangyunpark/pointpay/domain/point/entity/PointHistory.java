@@ -21,20 +21,16 @@ public class PointHistory extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private PointType pointType;
 
-    @Enumerated(EnumType.STRING)
-    private PointStatus pointStatus;
-
     private int pointBalance;
 
     protected PointHistory() {}
 
     @Builder
-    public PointHistory(final User user, final PointType pointType, final int pointBalance, final PointStatus pointStatus) {
+    public PointHistory(User user, PointType pointType, int pointBalance) {
         this.user = user;
         this.pointType = pointType;
         this.createdAt = LocalDateTime.now();
         this.pointBalance = pointBalance;
-        this.pointStatus = pointStatus;
     }
 
     public User getUser() {
@@ -45,8 +41,8 @@ public class PointHistory extends BaseEntity {
         return this.pointBalance;
     }
 
-    public PointStatus getPointStatus() {
-        return this.pointStatus;
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
     }
 
     public PointType getPointType() {
@@ -58,7 +54,6 @@ public class PointHistory extends BaseEntity {
                 .user(user)
                 .pointType(event.getPointType())
                 .pointBalance(event.getAmount())
-                .pointStatus(PointStatus.SUCCESS)
                 .build();
     }
 }

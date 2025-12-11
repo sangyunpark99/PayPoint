@@ -1,0 +1,1 @@
+ docker-compose --profile loadtest up -d k6 --build

@@ -32,4 +32,7 @@ CREATE TABLE point_history_event
     point_amount INT NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     event_status VARCHAR(20) NOT NULL DEFAULT 'READY'
-)
+);
+
+ALTER TABLE point_history
+DROP COLUMN point_status;

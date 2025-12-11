@@ -1,0 +1,50 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/pointpay
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 60
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  tomcat:
+    threads:
+      max: 250
+    mbeanregistry:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  metrics:
+    enable:
+      tomcat: true
+
+cache:
+  warmup:
+    enabled: true
+
+logging:
+  level:
+    org.springframework.retry: DEBUG
+    root: info

@@ -1,4 +1,4 @@
-package org.sangyunpark.pointpay.domain.point.dto.request;
+package org.sangyunpark.pointpay.domain.point.controller.dto.request;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
