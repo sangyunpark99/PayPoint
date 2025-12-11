@@ -49,12 +49,4 @@ public class User extends BaseEntity {
             throw new BusinessException(ErrorCode.POINT_LIMIT_EXCEED);
         }
     }
-
-    public void usePoint(final int minusPointBalance) {
-        if(this.pointBalance < minusPointBalance) {
-            throw new IllegalArgumentException("잔여 포인트가 부족합니다.");
-        }
-
-        this.pointBalance -= pointBalance;
-    }
  }
