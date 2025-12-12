@@ -46,7 +46,10 @@ management:
 
 cache:
   warmup:
-    enabled: false
+    enabled: true
+
+scheduler:
+  enabled: true
 
 logging:
   level:
