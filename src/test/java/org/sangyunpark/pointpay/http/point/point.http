@@ -1,6 +1,18 @@
 GET http://localhost:8080/api/point/1/histories?startDate=2025-10-01T00:00:00&endDate=2025-10-30T00:00:00
 Content-Type: application/json
 
-###
-GET http://localhost:8080/api/point/2/detail?startDate=2025-10-01T00:00:00
+### 월별 포인트 수입, 지출 세부 내역 조회
+GET http://localhost:8080/api/point/1/detail?startDate=2025-12-01T00:00:00
 Content-Type: application/json
+
+### 포인트 충전
+POST http://localhost:8080/api/point/charge
+Content-Type: application/json
+
+{
+  "userId" : 1,
+  "point" : 1234
+}
+
+### 오늘 포인트 내역 조회
+GET http://localhost:8080/api/point/1/detail/today
