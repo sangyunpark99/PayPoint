@@ -4,7 +4,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import lombok.RequiredArgsConstructor;
 import org.sangyunpark.pointpay.domain.point.cache.PointHistorySummaryCache;
 import org.sangyunpark.pointpay.domain.point.cache.loader.PointHistorySummaryDbLoader;
-import org.sangyunpark.pointpay.domain.point.cache.local.key.PointHistorySummaryCacheKey;
+import org.sangyunpark.pointpay.domain.point.cache.key.PointHistorySummaryCacheKey;
 import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesSummaryResponse;
 import org.springframework.stereotype.Component;
 
