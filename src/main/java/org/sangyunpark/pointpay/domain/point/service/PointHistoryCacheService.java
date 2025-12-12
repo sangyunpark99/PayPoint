@@ -3,9 +3,11 @@ package org.sangyunpark.pointpay.domain.point.service;
 import lombok.RequiredArgsConstructor;
 import org.sangyunpark.pointpay.domain.point.cache.PointHistoryDetailCache;
 import org.sangyunpark.pointpay.domain.point.cache.PointHistorySummaryCache;
-import org.sangyunpark.pointpay.domain.point.cache.local.key.PointHistoryDetailCacheKey;
-import org.sangyunpark.pointpay.domain.point.cache.local.key.PointHistorySummaryCacheKey;
-import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesPerMonthResponse;
+import org.sangyunpark.pointpay.domain.point.cache.key.PointHistoryDetailCacheKey;
+import org.sangyunpark.pointpay.domain.point.cache.key.PointHistoryDetailTodayCacheKey;
+import org.sangyunpark.pointpay.domain.point.cache.key.PointHistorySummaryCacheKey;
+import org.sangyunpark.pointpay.domain.point.cache.redis.RedisPointHistoryDetailTodayCache;
+import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesResponse;
 import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesSummaryResponse;
 import org.springframework.stereotype.Service;
 
@@ -15,26 +17,30 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class PointHistoryCacheService {
 
+    private final RedisPointHistoryDetailTodayCache detailTodayCache;
     private final PointHistoryDetailCache detailCache;
-
     private final PointHistorySummaryCache summaryCache;
 
     public PointHistoriesSummaryResponse getSummaryPointHistories(long userId, LocalDateTime startDate, LocalDateTime endDate) {
         PointHistorySummaryCacheKey key = new PointHistorySummaryCacheKey(userId, startDate, endDate);
-        PointHistoriesSummaryResponse response = summaryCache.load(key);
-        if(response != null) {
-            return response;
-        }
         return summaryCache.loadAndCache(key);
     }
 
-    public PointHistoriesPerMonthResponse getDetailPointHistoriesPerMonth(long userId, LocalDateTime startDate) {
+    public PointHistoriesResponse getDetailPointHistoriesPerMonth(long userId, LocalDateTime startDate) {
         PointHistoryDetailCacheKey key = new PointHistoryDetailCacheKey(userId, startDate);
-        PointHistoriesPerMonthResponse response = detailCache.load(key);
-        if(response != null) {
-            return response;
-        }
+        PointHistoriesResponse beforeTodayHistory = detailCache.loadAndCache(key);
+        PointHistoriesResponse todayHistory = getDetailPointHistoriesPerToday(userId);
+        beforeTodayHistory.getPointHistories().addAll(todayHistory.getPointHistories());
+        return beforeTodayHistory;
+    }
 
-        return detailCache.loadAndCache(key);
+    public PointHistoriesResponse getDetailPointHistoriesPerToday(long userId) {
+        PointHistoryDetailTodayCacheKey key = new PointHistoryDetailTodayCacheKey(userId);
+        return detailTodayCache.loadAndCache(key);
+    }
+
+    public void detailPointHistoryPerTodayEvict(long userId) {
+        PointHistoryDetailTodayCacheKey key = new PointHistoryDetailTodayCacheKey(userId);
+        detailTodayCache.evict(key);
     }
 }
