@@ -6,15 +6,15 @@ import org.sangyunpark.pointpay.domain.point.entity.PointType;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class PointHistoriesPerMonthResponse {
+public class PointHistoriesResponse {
 
     private List<PointHistoryPerMonth> pointHistories;
 
-    public PointHistoriesPerMonthResponse() {
+    public PointHistoriesResponse() {
 
     }
 
-    public PointHistoriesPerMonthResponse(List<PointHistoryPerMonth> pointHistories) {
+    public PointHistoriesResponse(List<PointHistoryPerMonth> pointHistories) {
         this.pointHistories = pointHistories;
     }
 
