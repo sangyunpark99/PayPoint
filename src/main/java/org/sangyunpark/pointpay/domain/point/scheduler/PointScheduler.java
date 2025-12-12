@@ -7,6 +7,7 @@ import org.sangyunpark.pointpay.domain.event.service.PointEventService;
 import org.sangyunpark.pointpay.domain.point.entity.PointHistory;
 import org.sangyunpark.pointpay.domain.point.service.PointService;
 import org.sangyunpark.pointpay.domain.user.entity.User;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,12 @@ import java.util.List;
 
 @Slf4j
 @Component
+@ConditionalOnProperty(
+        prefix = "scheduler",
+        name = "enabled",
+        havingValue = "true",
+        matchIfMissing = false
+)
 public class PointScheduler {
 
     private final PointEventService pointEventService;
@@ -31,6 +38,7 @@ public class PointScheduler {
     )
     @Transactional
     public void reprocessFailedPointCharge() {
+
         List<PointHistoryEvent> pointHistoryEvents = pointEventService.getEventStatusIsReady();
         log.info("[PointScheduler] FAIL 상태인 포인트 충전 이력을 재처리 합니다. 대상 건수 = {}", pointHistoryEvents.size());
 

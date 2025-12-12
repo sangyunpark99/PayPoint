@@ -3,7 +3,7 @@ package org.sangyunpark.pointpay.config.redis;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesPerMonthResponse;
+import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesResponse;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,13 +30,13 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, PointHistoriesPerMonthResponse> pointHistoryPerMonthRedisTemplate(ObjectMapper redisObjectMapper) {
-        RedisTemplate<String, PointHistoriesPerMonthResponse> template = new RedisTemplate<>();
+    public RedisTemplate<String, PointHistoriesResponse> pointHistoryPerMonthRedisTemplate(ObjectMapper redisObjectMapper) {
+        RedisTemplate<String, PointHistoriesResponse> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
 
         template.setKeySerializer(new StringRedisSerializer());
 
-        GzipRedisSerializer<PointHistoriesPerMonthResponse> gzipSerializer = new GzipRedisSerializer<>(redisObjectMapper, new TypeReference<>(){});
+        GzipRedisSerializer<PointHistoriesResponse> gzipSerializer = new GzipRedisSerializer<>(redisObjectMapper, new TypeReference<>(){});
         template.setValueSerializer(gzipSerializer);
         template.setHashKeySerializer(new StringRedisSerializer());
         template.setHashValueSerializer(gzipSerializer);

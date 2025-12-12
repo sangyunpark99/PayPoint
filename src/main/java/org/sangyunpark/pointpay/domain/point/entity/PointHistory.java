@@ -26,11 +26,12 @@ public class PointHistory extends BaseEntity {
     protected PointHistory() {}
 
     @Builder
-    public PointHistory(User user, PointType pointType, int pointBalance) {
+    public PointHistory(User user, PointType pointType, int pointBalance, LocalDateTime createdAt) {
         this.user = user;
         this.pointType = pointType;
         this.createdAt = LocalDateTime.now();
         this.pointBalance = pointBalance;
+        this.createdAt = createdAt;
     }
 
     public User getUser() {
@@ -54,6 +55,7 @@ public class PointHistory extends BaseEntity {
                 .user(user)
                 .pointType(event.getPointType())
                 .pointBalance(event.getAmount())
+                .createdAt(event.getCreatedAt())
                 .build();
     }
 }

@@ -3,7 +3,7 @@ package org.sangyunpark.pointpay.domain.point.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.sangyunpark.pointpay.domain.event.service.PointEventService;
-import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesPerMonthResponse;
+import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesResponse;
 import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesSummaryResponse;
 import org.sangyunpark.pointpay.domain.point.entity.PointHistory;
 import org.sangyunpark.pointpay.domain.point.entity.PointType;
@@ -32,10 +32,12 @@ public class PointService {
 
     @Transactional
     public void chargePoint(long userId, int pointAmount) {
+        LocalDateTime createdAt = LocalDateTime.now();
         User user = userJpaRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         user.validatePointCharge(pointAmount, MAX_POINT);
         userJpaRepository.increasePoint(userId, pointAmount, MAX_POINT);
-        pointEventService.savePointEvent(userId, pointAmount, PointType.CHARGE);
+        pointEventService.savePointEvent(userId, pointAmount, PointType.CHARGE, createdAt);
+        pointHistoryCacheService.detailPointHistoryPerTodayEvict(userId);
     }
 
     @Transactional(readOnly = true)
@@ -49,7 +51,12 @@ public class PointService {
     }
 
     @Transactional(readOnly = true)
-    public PointHistoriesPerMonthResponse getPointHistoryDetailPerMonth(long userId, LocalDateTime startDate) {
+    public PointHistoriesResponse getPointHistoryDetailPerMonth(long userId, LocalDateTime startDate) {
        return pointHistoryCacheService.getDetailPointHistoriesPerMonth(userId, startDate);
+    }
+
+    @Transactional(readOnly = true)
+    public PointHistoriesResponse getPointHistoryDetailPerToday(long userId) {
+        return pointHistoryCacheService.getDetailPointHistoriesPerToday(userId);
     }
 }

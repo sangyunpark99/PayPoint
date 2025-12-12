@@ -1,4 +1,4 @@
-package org.sangyunpark.pointpay.domain.point.cache.local.key;
+package org.sangyunpark.pointpay.domain.point.cache.key;
 
 import java.time.LocalDateTime;
 import java.time.YearMonth;

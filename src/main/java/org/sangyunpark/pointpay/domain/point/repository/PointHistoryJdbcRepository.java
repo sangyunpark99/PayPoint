@@ -17,10 +17,11 @@ public class PointHistoryJdbcRepository {
     }
 
     public void batchInsert(List<PointHistory> histories) {
+
         String sql = """
                 INSERT INTO point_history
                     (created_at, point_balance, point_type, user_id)
-                VALUES(NOW(),?,?,?,?)
+                VALUES(?,?,?,?)
                 """;
 
         jdbcTemplate.batchUpdate(
@@ -28,9 +29,10 @@ public class PointHistoryJdbcRepository {
                 histories,
                 BATCH_SIZE,
                 (ps, history) -> {
-                    ps.setInt(1, history.getPointBalance());
-                    ps.setString(2, history.getPointType().name());
-                    ps.setLong(3, history.getUser().getId());
+                    ps.setObject(1, history.getCreatedAt());
+                    ps.setInt(2, history.getPointBalance());
+                    ps.setString(3, history.getPointType().name());
+                    ps.setLong(4, history.getUser().getId());
                 }
         );
     }
