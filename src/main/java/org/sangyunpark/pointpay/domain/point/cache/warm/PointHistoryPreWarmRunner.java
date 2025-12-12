@@ -2,8 +2,10 @@ package org.sangyunpark.pointpay.domain.point.cache.warm;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.sangyunpark.pointpay.domain.point.cache.local.key.PointHistoryDetailCacheKey;
+import org.sangyunpark.pointpay.domain.point.cache.key.PointHistoryDetailCacheKey;
+import org.sangyunpark.pointpay.domain.point.cache.key.PointHistoryDetailTodayCacheKey;
 import org.sangyunpark.pointpay.domain.point.cache.redis.RedisPointHistoryDetailCache;
+import org.sangyunpark.pointpay.domain.point.cache.redis.RedisPointHistoryDetailTodayCache;
 import org.sangyunpark.pointpay.domain.user.repository.UserJpaRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -22,12 +24,13 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class PointHistoryPreWarmRunner implements ApplicationRunner {
 
-    private static final LocalDate PREWARM_START = LocalDate.of(2025,10,1);
+    private static final LocalDate PREWARM_START = LocalDate.of(2025,12,1);
 
     @Value("${cache.warmup.enabled:false}")
     private boolean enabled;
 
     private final RedisPointHistoryDetailCache redisPointHistoryDetailCache;
+    private final RedisPointHistoryDetailTodayCache redisPointHistoryDetailTodayCache;
     private final UserJpaRepository userJpaRepository;
 
     @Override
@@ -45,13 +48,17 @@ public class PointHistoryPreWarmRunner implements ApplicationRunner {
         List<Long> userIds = userJpaRepository.findAllIds();
 
         ExecutorService executor = Executors.newFixedThreadPool(4);
-        int target = userIds.size() / 3;
+        int target = 3000;
         for(int i = 0; i < target; i++) {
             Long userId = userIds.get(i);
             executor.submit(() -> {
                 try {
                     redisPointHistoryDetailCache.loadAndCache(
                             new PointHistoryDetailCacheKey(userId, startDateTime)
+                    );
+
+                    redisPointHistoryDetailTodayCache.loadAndCache(
+                            new PointHistoryDetailTodayCacheKey(userId)
                     );
                 } catch (Exception e) {
                     log.error("캐싱 데이터 적재 실패 - userId={}", userId, e);
@@ -73,6 +80,6 @@ public class PointHistoryPreWarmRunner implements ApplicationRunner {
         long endTime = System.currentTimeMillis();
         double seconds = (endTime - startTime) / 1000.0;
 
-        log.info("Cache WarmUp 완료 - 대상 유저: {}, 소요 시간: {}s", userIds.size(), seconds);
+        log.info("Cache WarmUp 완료 - 대상 유저: {}, 소요 시간: {}s", 5000, seconds);
     }
 }
