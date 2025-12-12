@@ -5,26 +5,31 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.sangyunpark.pointpay.domain.point.cache.PointHistoryDetailCache;
 import org.sangyunpark.pointpay.domain.point.cache.loader.PointHistoryDetailDbLoader;
-import org.sangyunpark.pointpay.domain.point.cache.local.key.PointHistoryDetailCacheKey;
-import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesPerMonthResponse;
+import org.sangyunpark.pointpay.domain.point.cache.key.PointHistoryDetailCacheKey;
+import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesResponse;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class LocalPointHistoryDetailCache implements PointHistoryDetailCache {
+public class LocalPointHistoryDetailCache implements PointHistoryDetailCache<PointHistoryDetailCacheKey> {
 
-    private final Cache<PointHistoryDetailCacheKey, PointHistoriesPerMonthResponse> cache;
+    private final Cache<PointHistoryDetailCacheKey, PointHistoriesResponse> cache;
     private final PointHistoryDetailDbLoader loader;
 
     @Override
-    public PointHistoriesPerMonthResponse load(PointHistoryDetailCacheKey key) {
+    public PointHistoriesResponse load(PointHistoryDetailCacheKey key) {
         log.info("cache size = {}", cache.asMap().size());
         return cache.getIfPresent(key);
     }
 
     @Override
-    public PointHistoriesPerMonthResponse loadAndCache(PointHistoryDetailCacheKey key) {
-        return cache.get(key, v -> loader.loadFromDb(key));
+    public PointHistoriesResponse loadAndCache(PointHistoryDetailCacheKey key) {
+        return cache.get(key, v -> loader.loadFromDbForMonth(key));
+    }
+
+    @Override
+    public void evict(PointHistoryDetailCacheKey key) {
+        cache.invalidate(key);
     }
 }
