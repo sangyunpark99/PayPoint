@@ -1,7 +1,9 @@
 package org.sangyunpark.pointpay.domain.point.controller;
 
 import jakarta.validation.Valid;
+import org.sangyunpark.pointpay.common.idempotency.Idempotent;
 import org.sangyunpark.pointpay.domain.point.controller.dto.request.PointAddRequest;
+import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointChargeResponse;
 import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesResponse;
 import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesSummaryResponse;
 import org.sangyunpark.pointpay.domain.point.service.PointService;
@@ -19,9 +21,10 @@ public class PointController {
         this.pointService = pointService;
     }
 
+    @Idempotent
     @PostMapping("/charge")
-    public void chargePoint(@RequestBody @Valid PointAddRequest request) {
-        pointService.chargePoint(request.getUserId(), request.getPoint());
+    public PointChargeResponse chargePoint(@RequestBody @Valid PointAddRequest request) {
+        return pointService.chargePoint(request.getUserId(), request.getPoint());
     }
 
     @GetMapping("/{userId}/histories")
