@@ -5,6 +5,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @SpringBootTest
-public abstract class ServiceTest {
+public abstract class CommonTest {
 
 }

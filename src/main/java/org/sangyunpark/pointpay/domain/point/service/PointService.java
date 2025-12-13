@@ -3,6 +3,7 @@ package org.sangyunpark.pointpay.domain.point.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.sangyunpark.pointpay.domain.event.service.PointEventService;
+import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointChargeResponse;
 import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesResponse;
 import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesSummaryResponse;
 import org.sangyunpark.pointpay.domain.point.entity.PointHistory;
@@ -31,13 +32,23 @@ public class PointService {
     private final PointHistoryCacheService pointHistoryCacheService;
 
     @Transactional
-    public void chargePoint(long userId, int pointAmount) {
+    public PointChargeResponse chargePoint(long userId, int pointAmount) {
         LocalDateTime createdAt = LocalDateTime.now();
+
         User user = userJpaRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         user.validatePointCharge(pointAmount, MAX_POINT);
         userJpaRepository.increasePoint(userId, pointAmount, MAX_POINT);
+
         pointEventService.savePointEvent(userId, pointAmount, PointType.CHARGE, createdAt);
         pointHistoryCacheService.detailPointHistoryPerTodayEvict(userId);
+
+        int currentPoint = userJpaRepository.findPointBalanceById(userId);
+
+        return PointChargeResponse.builder()
+                .userId(user.getId())
+                .chargePoint(pointAmount)
+                .currentPoint(currentPoint)
+                .build();
     }
 
     @Transactional(readOnly = true)

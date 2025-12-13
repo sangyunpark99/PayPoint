@@ -13,8 +13,11 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
 
     @Modifying
     @Query("UPDATE User u set u.pointBalance = u.pointBalance + :amount WHERE u.id = :userId AND u.pointBalance + :amount <= :maxPoint")
-    int increasePoint(Long userId, int amount, int maxPoint);
+    int increasePoint(Long userId, int amount, int maxPoint); // 원자적 업데이트
 
     @Query("SELECT u.id FROM User u")
     List<Long> findAllIds();
+
+    @Query("SELECT u.pointBalance FROM User u WHERE u.id = :userId")
+    int findPointBalanceById(Long userId);
 }

@@ -21,3 +21,6 @@ spring:
 cache:
   warmup:
     enabled: false
+
+scheduler:
+  enabled: false
