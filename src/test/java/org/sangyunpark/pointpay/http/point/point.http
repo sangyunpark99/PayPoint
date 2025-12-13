@@ -8,6 +8,7 @@ Content-Type: application/json
 ### 포인트 충전
 POST http://localhost:8080/api/point/charge
 Content-Type: application/json
+X-Idempotency-Key: {{$uuid}}
 
 {
   "userId" : 1,
