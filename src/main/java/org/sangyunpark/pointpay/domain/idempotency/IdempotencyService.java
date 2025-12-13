@@ -12,9 +12,17 @@ import java.util.Optional;
 public class IdempotencyService {
 
     public static final String KEY_PREFIX = "idempotency:";
-    public static final Duration TTL = Duration.ofHours(1);
+    private static final Duration COMPLETED_TTL = Duration.ofHours(1);
+    private static final Duration IN_PROGRESS_TTL = Duration.ofSeconds(10);
 
     private final RedisTemplate<String, IdempotencyRecord> redisTemplate;
+
+    public boolean progress(String idempotencyKey) {
+        String redisKey = buildKey(idempotencyKey);
+        IdempotencyRecord record = IdempotencyRecord.inProgress();
+        Boolean check = redisTemplate.opsForValue().setIfAbsent(redisKey, record, IN_PROGRESS_TTL);
+        return Boolean.TRUE.equals(check);
+    }
 
     private String buildKey(String idempotencyKey) {
         return KEY_PREFIX + idempotencyKey;
@@ -25,7 +33,7 @@ public class IdempotencyService {
         return Optional.ofNullable(record);
     }
 
-    public void save(String idempotencyKey, IdempotencyRecord record) {
-        redisTemplate.opsForValue().set(buildKey(idempotencyKey), record, TTL);
+    public void complete(String idempotencyKey, IdempotencyRecord record) {
+        redisTemplate.opsForValue().set(buildKey(idempotencyKey), record, COMPLETED_TTL);
     }
 }

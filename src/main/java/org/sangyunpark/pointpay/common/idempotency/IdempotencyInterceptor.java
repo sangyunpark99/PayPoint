@@ -11,7 +11,9 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import java.util.Optional;
+
+import static org.sangyunpark.pointpay.domain.idempotency.IdempotencyRecord.COMPLETED;
 
 public class IdempotencyInterceptor implements HandlerInterceptor {
 
@@ -43,10 +45,17 @@ public class IdempotencyInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        var record = idempotencyService.find(key);
-        if(record.isPresent()) {
-            IdempotencyRecord value = record.get();
-            writeResponse(response, value);
+        Optional<IdempotencyRecord> cached = idempotencyService.find(key);
+        if(cached.isPresent() && cached.get().getStatus() == COMPLETED) {
+            writeResponse(response, cached.get());
+            return false;
+        }
+
+        boolean acquired = idempotencyService.progress(key);
+        if(!acquired) {
+            response.setStatus(HttpServletResponse.SC_CONFLICT);
+            response.setContentType(MediaType.TEXT_PLAIN_VALUE);
+            response.getWriter().write("해당 요청은 이미 처리중입니다.");
             return false;
         }
 
@@ -62,10 +71,6 @@ public class IdempotencyInterceptor implements HandlerInterceptor {
         }
         String key = keyAttr.toString();
 
-        if (idempotencyService.find(key).isPresent()) {
-            return;
-        }
-
         if (!(response instanceof ContentCachingResponseWrapper wrapper)) {
             return;
         }
@@ -73,17 +78,12 @@ public class IdempotencyInterceptor implements HandlerInterceptor {
         byte[] bodyBytes = wrapper.getContentAsByteArray();
         String body = new String(bodyBytes, StandardCharsets.UTF_8);
 
-        IdempotencyRecord record = new IdempotencyRecord(
-                response.getStatus(),
-                body,
-                LocalDateTime.now()
-        );
-
-        idempotencyService.save(key, record);
+        IdempotencyRecord record = IdempotencyRecord.completed(response.getStatus(), body);
+        idempotencyService.complete(key, record);
     }
 
     private void writeResponse(HttpServletResponse response, IdempotencyRecord record) throws IOException {
-        response.setStatus(record.getStatus());
+        response.setStatus(record.getStatusCode());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().write(record.getResponseBody());
     }
