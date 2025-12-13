@@ -2,7 +2,7 @@ package org.sangyunpark.pointpay.domain.point.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.sangyunpark.pointpay.common.ServiceTest;
+import org.sangyunpark.pointpay.common.CommonTest;
 import org.sangyunpark.pointpay.domain.user.entity.User;
 import org.sangyunpark.pointpay.domain.user.repository.UserJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-class PointServiceConcurrencyTest extends ServiceTest {
+class PointConcurrencyServiceTest extends CommonTest {
 
     @Autowired
     private PointService pointService;
@@ -22,7 +22,7 @@ class PointServiceConcurrencyTest extends ServiceTest {
     private UserJpaRepository userJpaRepository;
 
     @Test
-    @DisplayName("동일 회원에 대한 포인트 충전이 동시에 요청될 경우 발생하는 Lost Update 문제 방지")
+    @DisplayName("동일 회원에 대한 포인트 충전이 동시에 요청될 경우 발생하는 Lost Update 문제 방지합니다.")
     public void concurrentPointChargeTest() throws InterruptedException {
         User user = userJpaRepository.save(new User("test", 0));
 
