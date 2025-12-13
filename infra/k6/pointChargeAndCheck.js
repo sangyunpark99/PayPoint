@@ -2,6 +2,7 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { Counter } from 'k6/metrics';
 import { baseSetup, baseTeardown } from './common/time.js';
+import crypto from 'k6/crypto';
 
 const BASE_URL = 'http://localhost:8080/api/point';
 
@@ -43,6 +44,8 @@ function randomPoint() {
 export function charge() {
     const userId = randomUserId();
 
+    const url = 'http://localhost:8080/api/point/charge';
+
     const payload = JSON.stringify({
         userId: userId,
         point: randomPoint(),
@@ -51,6 +54,7 @@ export function charge() {
     const params = {
         headers: {
             'Content-Type': 'application/json',
+            'X-Idempotency-Key': idempotencyKey
         },
         tags: { type: 'charge' },
     };
