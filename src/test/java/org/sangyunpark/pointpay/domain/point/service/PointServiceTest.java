@@ -3,7 +3,7 @@ package org.sangyunpark.pointpay.domain.point.service;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.sangyunpark.pointpay.common.ServiceTest;
+import org.sangyunpark.pointpay.common.CommonTest;
 import org.sangyunpark.pointpay.domain.point.cache.PointHistoryDetailCache;
 import org.sangyunpark.pointpay.domain.point.cache.key.PointHistoryDetailCacheKey;
 import org.sangyunpark.pointpay.domain.point.cache.key.PointHistoryDetailTodayCacheKey;
@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesResponse.PointHistoryPerMonth;
 import static org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesSummaryResponse.PointHistorySummaryResponse;
 
-public class PointServiceTest extends ServiceTest {
+public class PointServiceTest extends CommonTest {
 
     private static final int MAX_POINT = 2_100_000_000;
 
