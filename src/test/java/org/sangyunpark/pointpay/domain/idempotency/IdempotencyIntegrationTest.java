@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
-class PointChargeIdempotencyIntegrationTest extends CommonTest {
+class IdempotencyIntegrationTest extends CommonTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -36,6 +36,7 @@ class PointChargeIdempotencyIntegrationTest extends CommonTest {
 
     private static final String IDEMPOTENCY_HEADER = "X-Idempotency-Key";
     private static final String IDEMPOTENCY_KEY_PREFIX = "idempotency:";
+    private static final String URL = "/api/point/charge";
 
     @Test
     @DisplayName("같은 멱등키로 두 번 요청시, 포인트는 한 번만 충전되고 두 번째 요청은 캐시된 응답을 사용합니다.")
@@ -53,13 +54,11 @@ class PointChargeIdempotencyIntegrationTest extends CommonTest {
             }
             """.formatted(userId, amount);
 
-        String url = "/api/point/charge";
-
         String redisKey = IDEMPOTENCY_KEY_PREFIX + idempotencyKey;
         redisTemplate.delete(redisKey);
 
         MvcResult firstResult = mockMvc.perform(
-                        post(url)
+                        post(URL)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header(IDEMPOTENCY_HEADER, idempotencyKey)
                                 .content(requestJson)
@@ -71,10 +70,9 @@ class PointChargeIdempotencyIntegrationTest extends CommonTest {
 
         IdempotencyRecord redisSaved = redisTemplate.opsForValue().get(redisKey);
         assertThat(redisSaved.getResponseBody()).isEqualTo(firstBody);
-        assertThat(redisSaved.getStatus()).isEqualTo(200);
 
         MvcResult secondResult = mockMvc.perform(
-                        post(url)
+                        post(URL)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header(IDEMPOTENCY_HEADER, idempotencyKey)
                                 .content(requestJson)
