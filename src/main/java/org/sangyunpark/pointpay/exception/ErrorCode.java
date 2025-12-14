@@ -6,7 +6,8 @@ public enum ErrorCode {
 
     DUPLICATED_NICKNAME(HttpStatus.CONFLICT, "중복된 닉네임 입니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 유저 입니다."),
-    POINT_LIMIT_EXCEED(HttpStatus.BAD_REQUEST, "최대 충전 가능한 포인트를 초과했습니다.");
+    POINT_LIMIT_EXCEED(HttpStatus.BAD_REQUEST, "최대 충전 가능한 포인트를 초과했습니다."),
+    PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 상품입니다.");
 
     private final HttpStatus status;
     private final String description;
