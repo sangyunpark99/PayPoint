@@ -3,16 +3,18 @@ package org.sangyunpark.pointpay.domain.product.entity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 import org.sangyunpark.pointpay.common.BaseEntity;
 
 @Entity
 @Table(name = "products")
+@DynamicUpdate
 @NoArgsConstructor
 public class Product extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String name;
 
@@ -27,7 +29,7 @@ public class Product extends BaseEntity {
         this.price = price;
     }
 
-    public long getId() {
+    public Long getId() {
         return this.id;
     }
 

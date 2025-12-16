@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-class PointConcurrencyServiceTest extends CommonTest {
+class ConcurrencyPointServiceTest extends CommonTest {
 
     @Autowired
     private PointService pointService;

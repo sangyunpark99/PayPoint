@@ -1,0 +1,2 @@
+CREATE INDEX idx_point_history_status
+    ON point_history(point_status);

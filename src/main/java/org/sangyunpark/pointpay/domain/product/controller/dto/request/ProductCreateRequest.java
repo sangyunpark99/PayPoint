@@ -5,11 +5,6 @@ public class ProductCreateRequest {
     private String name;
     private int stock;
 
-    public ProductCreateRequest(String name, int stock) {
-        this.name = name;
-        this.stock = stock;
-    }
-
     public String getName() {
         return this.name;
     }
