@@ -1,7 +1,7 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { Counter } from 'k6/metrics';
-import { baseSetup, baseTeardown } from './common/time.js';
+import { baseSetup, baseTeardown } from '../common/time.js';
 import crypto from 'k6/crypto';
 
 const BASE_URL = 'http://localhost:8080/api/point';
