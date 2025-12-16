@@ -1,0 +1,8 @@
+### 상품 생성
+POST http://localhost:8080/api/product
+Content-Type: application/json
+
+{
+  "name" : "상품_1",
+  "stock" : 10000
+}
