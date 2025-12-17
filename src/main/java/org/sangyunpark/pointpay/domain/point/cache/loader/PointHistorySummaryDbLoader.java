@@ -16,7 +16,7 @@ public class PointHistorySummaryDbLoader {
     private final PointHistoryJpaRepository pointHistoryJpaRepository;
 
     public PointHistoriesSummaryResponse loadFromDb(PointHistorySummaryCacheKey key) {
-        List<PointHistoryProjection> rows = pointHistoryJpaRepository.findByDate(key.getUserId(), key.getStartDate(), key.getEndDate());
+        List<PointHistoryProjection> rows = pointHistoryJpaRepository.findByDate(key.getUserId(), key.getStartDate().toLocalDate(), key.getEndDate().toLocalDate());
         List<PointHistoriesSummaryResponse.PointHistorySummaryResponse> response = rows.stream().map(r -> new PointHistoriesSummaryResponse.PointHistorySummaryResponse(r.getIncome(), r.getExpense(), r.getHistoryDate())).toList();
         return new PointHistoriesSummaryResponse(response);
     }

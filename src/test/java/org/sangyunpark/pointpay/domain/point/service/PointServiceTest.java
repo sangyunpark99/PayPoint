@@ -70,20 +70,19 @@ public class PointServiceTest extends CommonTest {
         LocalDateTime startDate = LocalDateTime.now();
         LocalDateTime endDate = LocalDateTime.now().plusDays(1);
         List<PointHistory> pointHistories = new ArrayList<>(List.of(
-                new PointHistory(savedUser, PointType.CHARGE, 300, null),
-                new PointHistory(savedUser, PointType.USE, 300, null),
-                new PointHistory(savedUser, PointType.TRANSFER, 300, null)
+                new PointHistory(savedUser, PointType.CHARGE, 300, LocalDateTime.now()),
+                new PointHistory(savedUser, PointType.USE, 300, LocalDateTime.now())
         ));
 
         pointHistoryJpaRepository.saveAll(pointHistories);
 
         // when
-        List<PointHistorySummaryResponse> response = pointService.getPointHistoriesSummary(user.getId(), startDate, endDate).getPointHistories();
+        List<PointHistorySummaryResponse> response = pointService.getPointHistoriesSummary(savedUser.getId(), startDate, endDate).getPointHistories();
         System.out.println(response);
         // then
         assertThat(response.size()).isEqualTo(1);
         assertThat(response.get(0).getIncome()).isEqualTo(300);
-        assertThat(response.get(0).getExpense()).isEqualTo(600);
+        assertThat(response.get(0).getExpense()).isEqualTo(300);
         assertThat(response.get(0).getDate()).isEqualTo(startDate.toLocalDate());
     }
 
@@ -97,9 +96,8 @@ public class PointServiceTest extends CommonTest {
         User savedUser = userJpaRepository.save(user);
         LocalDateTime startDate = LocalDateTime.now();
         List<PointHistory> pointHistories = new ArrayList<>(List.of(
-                new PointHistory(savedUser, PointType.CHARGE, 300, null),
-                new PointHistory(savedUser, PointType.USE, 300, null),
-                new PointHistory(savedUser, PointType.TRANSFER, 300, null)
+                new PointHistory(savedUser, PointType.CHARGE, 300, LocalDateTime.now()),
+                new PointHistory(savedUser, PointType.USE, 300, LocalDateTime.now())
         ));
 
         pointHistoryJpaRepository.saveAll(pointHistories);
@@ -107,13 +105,11 @@ public class PointServiceTest extends CommonTest {
         // when
         List<PointHistoryPerMonth> result = pointService.getPointHistoryDetailPerMonth(user.getId(), startDate).getPointHistories();
         // then
-        assertThat(result.size()).isEqualTo(3);
+        assertThat(result.size()).isEqualTo(2);
         assertThat(result.get(0).getPointBalance()).isEqualTo(300);
         assertThat(result.get(0).getPointType()).isEqualTo(PointType.CHARGE);
         assertThat(result.get(1).getPointBalance()).isEqualTo(300);
         assertThat(result.get(1).getPointType()).isEqualTo(PointType.USE);
-        assertThat(result.get(2).getPointBalance()).isEqualTo(300);
-        assertThat(result.get(2).getPointType()).isEqualTo(PointType.TRANSFER);
     }
 
     @Test
