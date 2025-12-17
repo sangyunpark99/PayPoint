@@ -6,6 +6,7 @@ import org.sangyunpark.pointpay.common.BaseEntity;
 import org.sangyunpark.pointpay.domain.event.entity.PointHistoryEvent;
 import org.sangyunpark.pointpay.domain.user.entity.User;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,6 +24,8 @@ public class PointHistory extends BaseEntity {
 
     private int pointBalance;
 
+    private LocalDate historyDate;
+
     protected PointHistory() {}
 
     @Builder
@@ -32,6 +35,7 @@ public class PointHistory extends BaseEntity {
         this.createdAt = LocalDateTime.now();
         this.pointBalance = pointBalance;
         this.createdAt = createdAt;
+        this.historyDate = createdAt.toLocalDate();
     }
 
     public User getUser() {
