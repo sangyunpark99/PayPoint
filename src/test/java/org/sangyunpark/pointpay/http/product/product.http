@@ -6,3 +6,6 @@ Content-Type: application/json
   "name" : "상품_1",
   "stock" : 10000
 }
+
+### 상품 조회
+GET http://localhost:8080/api/product
