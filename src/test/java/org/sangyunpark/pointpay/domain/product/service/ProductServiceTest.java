@@ -7,6 +7,8 @@ import org.sangyunpark.pointpay.common.CommonTest;
 import org.sangyunpark.pointpay.domain.product.entity.Product;
 import org.sangyunpark.pointpay.domain.product.repository.ProductJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
@@ -30,6 +32,7 @@ class ProductServiceTest extends CommonTest {
     private EntityManager em;
 
     @Test
+    @Transactional
     @DisplayName("상품을 추가하는 경우 조회가 됩니다.")
     public void createProduct() {
         // given
@@ -68,8 +71,8 @@ class ProductServiceTest extends CommonTest {
         assertThat(productMap).isNotInstanceOf(TreeMap.class);
         assertThat(productMap).isNotInstanceOf(ConcurrentHashMap.class);
 
-        assertThat(productMap.get(1L).getName()).isEqualTo(p1.getName());
-        assertThat(productMap.get(2L).getName()).isEqualTo(p2.getName());
+        assertThat(productMap.get(p1.getId()).getName()).isEqualTo(p1.getName());
+        assertThat(productMap.get(p2.getId()).getName()).isEqualTo(p2.getName());
     }
 
     @Test
@@ -87,6 +90,35 @@ class ProductServiceTest extends CommonTest {
 
         assertThatThrownBy(() -> products.stream().collect(Collectors.toMap(Product::getId, Function.identity())))
                 .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("동일한 시간 상품 조회시, id 순서대로 조회됩니다.")
+    void whenCreateProductSameTime_then() {
+        Product a = productJpaRepository.save(new Product("a", 1, 100));
+        Product b = productJpaRepository.save(new Product("b", 1, 100));
+        Product c = productJpaRepository.save(new Product("c", 1, 100));
+
+        em.createNativeQuery("""
+        UPDATE products
+        SET created_at = '2025-12-17 10:00:00'
+        WHERE id IN (:a, :b, :c)
+        """)
+                .setParameter("a", a.getId())
+                .setParameter("b", b.getId())
+                .setParameter("c", c.getId())
+                .executeUpdate();
+
+        em.clear();
+
+        List<Product> page = productJpaRepository.findAll(
+                PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "createdAt"))
+        ).getContent();
+
+        assertThat(page.stream().map(Product::getId).toList())
+                .containsSubsequence(
+                        List.of(a.getId(), b.getId(), c.getId()));
     }
 
     private static void setId(Object entity, Long id) throws Exception {

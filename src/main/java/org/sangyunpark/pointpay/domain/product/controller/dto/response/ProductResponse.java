@@ -1,8 +1,10 @@
 package org.sangyunpark.pointpay.domain.product.controller.dto.response;
 
 import lombok.Builder;
+import lombok.Getter;
 import org.sangyunpark.pointpay.domain.product.entity.Product;
 
+@Getter
 public class ProductResponse {
 
     private long productId;
