@@ -1,9 +1,10 @@
 package org.sangyunpark.pointpay.domain.point.scheduler;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.sangyunpark.pointpay.domain.event.entity.EventStatus;
 import org.sangyunpark.pointpay.domain.event.entity.PointHistoryEvent;
-import org.sangyunpark.pointpay.domain.event.service.PointEventService;
+import org.sangyunpark.pointpay.domain.event.service.PointHistoryEventService;
 import org.sangyunpark.pointpay.domain.point.entity.PointHistory;
 import org.sangyunpark.pointpay.domain.point.service.PointService;
 import org.sangyunpark.pointpay.domain.user.entity.User;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 @ConditionalOnProperty(
         prefix = "scheduler",
         name = "enabled",
@@ -25,31 +27,28 @@ import java.util.List;
 )
 public class PointScheduler {
 
-    private final PointEventService pointEventService;
-    private final PointService pointService;
+    private static int BATCH_SIZE = 10000;
 
-    public PointScheduler(PointEventService pointEventService, PointService pointService) {
-        this.pointEventService = pointEventService;
-        this.pointService = pointService;
-    }
+    private final PointHistoryEventService pointHistoryEventService;
+    private final PointService pointService;
 
     @Scheduled(
         cron = "* * * * * *"
     )
     @Transactional
-    public void reprocessFailedPointCharge() {
+    public void pointHistoryConsumer() {
 
-        List<PointHistoryEvent> pointHistoryEvents = pointEventService.getEventStatusIsReady();
-        log.info("[PointScheduler] FAIL 상태인 포인트 충전 이력을 재처리 합니다. 대상 건수 = {}", pointHistoryEvents.size());
+        List<PointHistoryEvent> pointHistoryEvents = pointHistoryEventService.findPointHistoryEventByEventStatus(EventStatus.READY, BATCH_SIZE);
+        List<Long> ids = pointHistoryEvents.stream().map(PointHistoryEvent::getId).toList();
+        pointHistoryEventService.updateEventStatusInIds(EventStatus.READY, EventStatus.PROCESSING, ids);
+        List<PointHistory> pointHistories = new ArrayList<>(pointHistoryEvents.size());
 
-        ArrayList<PointHistory> pointHistories = new ArrayList<>(pointHistoryEvents.size());
         for(PointHistoryEvent event : pointHistoryEvents) {
             User user = new User(event.getUserId());
-            PointHistory history = PointHistory.fromEvent(event, user);
-            pointHistories.add(history);
-            event.updateEventStatus(EventStatus.FINISH);
+            pointHistories.add(PointHistory.fromEvent(event, user));
         }
 
-        pointService.savePointHistories(pointHistories);
+        pointService.batchInsert(pointHistories);
+        pointHistoryEventService.updateEventStatusInIds(EventStatus.PROCESSING, EventStatus.FINISH, ids);
     }
 }
