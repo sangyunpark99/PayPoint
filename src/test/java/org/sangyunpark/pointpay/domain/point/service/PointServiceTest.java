@@ -19,7 +19,6 @@ import org.sangyunpark.pointpay.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -52,15 +51,7 @@ public class PointServiceTest extends CommonTest {
     @Autowired
     private RedisPointHistoryDetailTodayCache redisPointHistoryDetailTodayCache;
 
-    @AfterEach
-    void cleanUp() {
-        try(RedisConnection con = redisConnectionFactory.getConnection()) {
-            con.serverCommands().flushDb();
-        }
-    }
-
     @Test
-    @Transactional
     @DisplayName("입력한 기간 내의 포인트 내역을 조회합니다.")
     public void getPointHistoriesTest() {
 
@@ -70,8 +61,8 @@ public class PointServiceTest extends CommonTest {
         LocalDateTime startDate = LocalDateTime.now();
         LocalDateTime endDate = LocalDateTime.now().plusDays(1);
         List<PointHistory> pointHistories = new ArrayList<>(List.of(
-                new PointHistory(savedUser, PointType.CHARGE, 300, LocalDateTime.now()),
-                new PointHistory(savedUser, PointType.USE, 300, LocalDateTime.now())
+                new PointHistory(savedUser, PointType.CHARGE, 0, 300, LocalDateTime.now()),
+                new PointHistory(savedUser, PointType.PAYMENT, 0, 300, LocalDateTime.now())
         ));
 
         pointHistoryJpaRepository.saveAll(pointHistories);
@@ -87,7 +78,6 @@ public class PointServiceTest extends CommonTest {
     }
 
     @Test
-    @Transactional
     @DisplayName("한달 포인트 내역을 조회합니다.")
     public void getPointHistoriesDetailPerMonthTest() {
 
@@ -96,8 +86,8 @@ public class PointServiceTest extends CommonTest {
         User savedUser = userJpaRepository.save(user);
         LocalDateTime startDate = LocalDateTime.now();
         List<PointHistory> pointHistories = new ArrayList<>(List.of(
-                new PointHistory(savedUser, PointType.CHARGE, 300, LocalDateTime.now()),
-                new PointHistory(savedUser, PointType.USE, 300, LocalDateTime.now())
+                new PointHistory(savedUser, PointType.CHARGE, 0,300, LocalDateTime.now()),
+                new PointHistory(savedUser, PointType.PAYMENT, 0,300, LocalDateTime.now())
         ));
 
         pointHistoryJpaRepository.saveAll(pointHistories);
@@ -109,11 +99,10 @@ public class PointServiceTest extends CommonTest {
         assertThat(result.get(0).getPointBalance()).isEqualTo(300);
         assertThat(result.get(0).getPointType()).isEqualTo(PointType.CHARGE);
         assertThat(result.get(1).getPointBalance()).isEqualTo(300);
-        assertThat(result.get(1).getPointType()).isEqualTo(PointType.USE);
+        assertThat(result.get(1).getPointType()).isEqualTo(PointType.PAYMENT);
     }
 
     @Test
-    @Transactional
     @DisplayName("포인트 충전시 한도 금액을 초과하면 충전되지 않습니다.")
     public void chargePointOverMaxBalance() {
         User user = new User("test", MAX_POINT);
@@ -126,7 +115,6 @@ public class PointServiceTest extends CommonTest {
     }
 
     @Test
-    @Transactional
     @DisplayName("포인트 충전시 캐싱된 포인트 월별 상세 내역 데이터는 삭제 되지 않고, 오늘 내역만 삭제 됩니다.")
     public void chargePointShouldEvictMonthlyDetailCache() {
         // given
@@ -134,7 +122,7 @@ public class PointServiceTest extends CommonTest {
         User savedUser = userJpaRepository.save(user);
 
         LocalDateTime time = LocalDateTime.of(2025, 10, 1,0,0);
-        PointHistory pointHistory = new PointHistory(savedUser, PointType.CHARGE, 300, time);
+        PointHistory pointHistory = new PointHistory(savedUser, PointType.CHARGE, 0,300, time);
         pointHistoryJpaRepository.save(pointHistory);
 
         PointHistoryDetailCacheKey key = new PointHistoryDetailCacheKey(savedUser.getId(), time);
@@ -145,10 +133,18 @@ public class PointServiceTest extends CommonTest {
         pointService.chargePoint(savedUser.getId(), 1_000); // 포인트 충전을 요청한 경우
 
         // then
-        PointHistoriesResponse afterEvict = pointHistoryDetailCache.load(key); //
+        PointHistoriesResponse afterEvict = pointHistoryDetailCache.load(key);
         PointHistoriesResponse afterEvictToday = redisPointHistoryDetailTodayCache.load(new PointHistoryDetailTodayCacheKey(savedUser.getId()));
 
         assertThat(afterEvict).isNotNull();
         assertThat(afterEvictToday).isNull();
+    }
+
+    @AfterEach
+    void clean() {
+        try(RedisConnection con = redisConnectionFactory.getConnection()) {
+            con.serverCommands().flushDb();
+        }
+        dbCleaner.clear();
     }
 }
