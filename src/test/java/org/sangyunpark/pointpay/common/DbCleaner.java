@@ -19,6 +19,8 @@ public class DbCleaner {
         jdbcTemplate.execute("TRUNCATE TABLE orders");
         jdbcTemplate.execute("TRUNCATE TABLE products");
         jdbcTemplate.execute("TRUNCATE TABLE users");
+        jdbcTemplate.execute("TRUNCATE TABLE point_history_event");
+        jdbcTemplate.execute("TRUNCATE TABLE point_history");
 
         jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE");
     }
