@@ -24,7 +24,7 @@ cache:
     enabled: false
 
 scheduler:
-  enabled: false
+  enabled: true
 
 logging:
   level.org.hibernate.SQL: debug
