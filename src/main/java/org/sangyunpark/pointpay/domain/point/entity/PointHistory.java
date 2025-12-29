@@ -2,6 +2,7 @@ package org.sangyunpark.pointpay.domain.point.entity;
 
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.Getter;
 import org.sangyunpark.pointpay.common.BaseEntity;
 import org.sangyunpark.pointpay.domain.event.entity.PointHistoryEvent;
 import org.sangyunpark.pointpay.domain.user.entity.User;
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
 public class PointHistory extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,43 +24,30 @@ public class PointHistory extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private PointType pointType;
 
-    private int pointBalance;
+    private long balanceBefore;
+
+    private long balanceAfter;
 
     private LocalDate historyDate;
 
     protected PointHistory() {}
 
     @Builder
-    public PointHistory(User user, PointType pointType, int pointBalance, LocalDateTime createdAt) {
+    public PointHistory(User user, PointType pointType, long balanceBefore, long balanceAfter, LocalDateTime createdAt) {
         this.user = user;
         this.pointType = pointType;
-        this.createdAt = LocalDateTime.now();
-        this.pointBalance = pointBalance;
+        this.balanceBefore = balanceBefore;
+        this.balanceAfter = balanceAfter;
         this.createdAt = createdAt;
-        this.historyDate = createdAt.toLocalDate();
-    }
-
-    public User getUser() {
-        return this.user;
-    }
-
-    public int getPointBalance() {
-        return this.pointBalance;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return this.createdAt;
-    }
-
-    public PointType getPointType() {
-        return this.pointType;
+        this.historyDate = LocalDateTime.now().toLocalDate();
     }
 
     public static PointHistory fromEvent(PointHistoryEvent event, User user) {
         return PointHistory.builder()
                 .user(user)
                 .pointType(event.getPointType())
-                .pointBalance(event.getAmount())
+                .balanceBefore(event.getBalanceBefore())
+                .balanceAfter(event.getBalanceAfter())
                 .createdAt(event.getCreatedAt())
                 .build();
     }
