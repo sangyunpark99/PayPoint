@@ -1,47 +1,56 @@
 import http from 'k6/http';
 import { sleep } from 'k6';
 
+const BASE_URL = 'http://localhost:8080/api';
+
+const USER_MIN = Number(1);
+const USER_MAX = Number(10000);
+
+const PRODUCT_MIN = Number(1);
+const PRODUCT_MAX = Number(50000);
+
+const ITEMS_PER_ORDER = Number(10);
+
+const QTY_MIN = Number(1);
+const QTY_MAX = Number(3);
+
+const SLEEP_SEC = Number(0.05);
+
 export const options = {
-    vus: 100,
-    duration: '30s',
+  vus: Number(100),
+  duration: '30s',
 };
 
-const BASE_URL = 'http://localhost:8080/api';
-const USER_ID = Number('1');
-const PRODUCT_IDS = ('1,2,3').split(',').map(Number);
-const QTY = Number('1');
+function randInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
-function pickTwoDistinctOrdered(arr) {
-    const firstIdx = Math.floor(Math.random() * arr.length);
-    const first = arr[firstIdx];
-
-    let second = first;
-    while (second === first) {
-        const secondIdx = Math.floor(Math.random() * arr.length);
-        second = arr[secondIdx];
-    }
-
-    return [first, second];
+function pickDistinctInts(count, min, max) {
+  const s = new Set();
+  while (s.size < count) {
+    s.add(randInt(min, max));
+  }
+  return Array.from(s);
 }
 
 export default function () {
-    const [p1, p2] = pickTwoDistinctOrdered(PRODUCT_IDS);
+  const userId = randInt(USER_MIN, USER_MAX);
 
-    const payload = JSON.stringify({
-        userId: USER_ID,
-        items: [
-            { productId: p1, quantity: randInt(1,3) },
-            { productId: p2, quantity: randInt(1,3) },
-        ],
-    });
+  const productIds = pickDistinctInts(ITEMS_PER_ORDER, PRODUCT_MIN, PRODUCT_MAX);
+  const items = productIds.map((pid) => ({
+    productId: pid,
+    quantity: randInt(QTY_MIN, QTY_MAX),
+  }));
 
-    http.post(`${BASE_URL}/orders`, payload, {
-        headers: { 'Content-Type': 'application/json' },
-    });
+  const payload = JSON.stringify({
+    userId,
+    items,
+  });
 
-    sleep(0.05);
-}
+  http.post(`${BASE_URL}/orders`, payload, {
+    headers: { 'Content-Type': 'application/json' },
+    tags: { name: 'POST /orders' },
+  });
 
-function randInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+  sleep(SLEEP_SEC);
 }
