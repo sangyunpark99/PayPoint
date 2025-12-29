@@ -1,5 +1,6 @@
 package org.sangyunpark.pointpay.domain.point.service;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.sangyunpark.pointpay.common.CommonTest;
@@ -55,9 +56,14 @@ class ConcurrencyPointServiceTest extends CommonTest {
         User reloaded = userJpaRepository.findById(user.getId())
                 .orElseThrow();
 
-        int balance = reloaded.getPointBalance();
-        int expected = threadCount * amount;
+        long balance = reloaded.getPointBalance();
+        long expected = threadCount * amount;
 
         assertThat(balance).isEqualTo(expected);
+    }
+
+    @AfterEach
+    void clean() {
+        dbCleaner.clear();
     }
 }
