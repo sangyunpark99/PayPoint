@@ -1,10 +1,9 @@
 package org.sangyunpark.pointpay.global;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.sangyunpark.pointpay.domain.idempotency.IdempotencyRecord;
-import org.sangyunpark.pointpay.domain.idempotency.IdempotencyRepository;
+import org.sangyunpark.pointpay.domain.idempotency.IdempotencyService;
 import org.sangyunpark.pointpay.exception.BusinessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 
     private static final String IDEMPOTENCY_KEY = "IDEMPOTENCY_KEY";
-    private final IdempotencyRepository idempotencyRepository;
+    private final IdempotencyService idempotencyService;
 
     @ExceptionHandler(exception = BindException.class)
     public ResponseEntity<?> handleBindException(BindException e) {
@@ -31,7 +30,7 @@ public class GlobalExceptionHandler {
         if (keyAttr != null) {
             String key = keyAttr.toString();
             IdempotencyRecord record = IdempotencyRecord.failed(e.getErrorCode().getStatus().value(), e.getMessage());
-            idempotencyRepository.complete(key, record);
+            idempotencyService.failed(key, record);
         }
         return ResponseEntity.status(e.getStatusCode().value()).body(e.getMessage());
     }
