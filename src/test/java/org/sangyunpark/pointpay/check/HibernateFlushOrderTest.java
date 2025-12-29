@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 
 public class HibernateFlushOrderTest extends RepositoryTest{
 
-
     @Autowired
     private UserJpaRepository userJpaRepository;
 
@@ -32,9 +31,9 @@ public class HibernateFlushOrderTest extends RepositoryTest{
 
         var f = User.class.getDeclaredField("pointBalance");
         f.setAccessible(true);
-        f.setInt(managed, f.getInt(managed) + 100);
+        f.setLong(managed, f.getLong(managed) + 100);
 
-        PointHistory ph = new PointHistory(managed,PointType.CHARGE,100, LocalDateTime.now());
+        PointHistory ph = new PointHistory(managed,PointType.CHARGE,0, 100,LocalDateTime.now());
         em.persist(ph);
 
         em.flush();
