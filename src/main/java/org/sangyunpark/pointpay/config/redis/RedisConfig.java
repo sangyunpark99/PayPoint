@@ -3,6 +3,7 @@ package org.sangyunpark.pointpay.config.redis;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lombok.RequiredArgsConstructor;
 import org.sangyunpark.pointpay.domain.idempotency.IdempotencyRecord;
 import org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesResponse;
 import org.springframework.cache.annotation.EnableCaching;
@@ -15,13 +16,10 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @EnableCaching
 @Configuration
+@RequiredArgsConstructor
 public class RedisConfig {
 
     private final RedisConnectionFactory redisConnectionFactory;
-
-    public RedisConfig(RedisConnectionFactory redisConnectionFactory) {
-        this.redisConnectionFactory = redisConnectionFactory;
-    }
 
     private <T> RedisTemplate<String, T> createRedisTemplate(RedisSerializer<T> valueSerializer) {
         RedisTemplate<String, T> template = new RedisTemplate<>();
@@ -29,9 +27,7 @@ public class RedisConfig {
 
         StringRedisSerializer keySerializer = new StringRedisSerializer();
         template.setKeySerializer(keySerializer);
-        template.setHashKeySerializer(keySerializer);
         template.setValueSerializer(valueSerializer);
-        template.setHashValueSerializer(valueSerializer);
 
         return template;
     }
