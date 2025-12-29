@@ -14,7 +14,7 @@ public class IdempotencyService {
     public static final String KEY_PREFIX = "idempotency:";
     private static final Duration COMPLETED_TTL = Duration.ofHours(1);
     private static final Duration IN_PROGRESS_TTL = Duration.ofSeconds(10);
-
+    private static final Duration FAILED_TTL = Duration.ofSeconds(10);
     private final RedisTemplate<String, IdempotencyRecord> redisTemplate;
 
     public boolean progress(String idempotencyKey) {
@@ -35,5 +35,9 @@ public class IdempotencyService {
 
     public void complete(String idempotencyKey, IdempotencyRecord record) {
         redisTemplate.opsForValue().set(buildKey(idempotencyKey), record, COMPLETED_TTL);
+    }
+
+    public void failed(String idempotencyKey, IdempotencyRecord record) {
+        redisTemplate.opsForValue().set(buildKey(idempotencyKey), record, FAILED_TTL);
     }
 }
