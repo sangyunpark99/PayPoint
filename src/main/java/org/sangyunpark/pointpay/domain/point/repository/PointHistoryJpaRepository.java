@@ -15,8 +15,8 @@ import java.util.List;
 public interface PointHistoryJpaRepository extends JpaRepository<PointHistory, Long> {
     @Query(value = """
         SELECT
-               SUM(CASE WHEN ph.point_type = 'CHARGE' THEN ph.point_balance ELSE 0 END) AS income,
-               SUM(CASE WHEN ph.point_type <> 'CHARGE' THEN ph.point_balance ELSE 0 END) AS expense,
+               SUM(CASE WHEN ph.point_type = 'CHARGE' THEN ph.balance_after ELSE 0 END) AS income,
+               SUM(CASE WHEN ph.point_type <> 'CHARGE' THEN ph.balance_after ELSE 0 END) AS expense,
                ph.history_date AS historyDate
         FROM point_history ph
         WHERE ph.user_id = :userId
@@ -29,7 +29,7 @@ public interface PointHistoryJpaRepository extends JpaRepository<PointHistory, L
 
     @Query("""
         SELECT new org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesResponse$PointHistoryPerMonth(
-            ph.pointBalance,
+            ph.balanceAfter,
             ph.pointType,
             ph.createdAt
         )
@@ -42,7 +42,7 @@ public interface PointHistoryJpaRepository extends JpaRepository<PointHistory, L
 
     @Query("""
        SELECT new org.sangyunpark.pointpay.domain.point.controller.dto.response.PointHistoriesResponse$PointHistoryPerMonth(
-            ph.pointBalance,
+            ph.balanceAfter,
             ph.pointType,
             ph.createdAt
         )
@@ -52,4 +52,6 @@ public interface PointHistoryJpaRepository extends JpaRepository<PointHistory, L
             AND ph.createdAt <= :endDate
     """)
     List<PointHistoriesResponse.PointHistoryPerMonth> findAllByUserIdAndCreatedAtToday(Long userId, LocalDateTime startDate, LocalDateTime endDate);
+
+    List<PointHistory> findAllByUserId(long userId);
 }

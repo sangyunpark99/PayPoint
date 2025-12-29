@@ -5,7 +5,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.sangyunpark.pointpay.common.CommonTest;
-import org.sangyunpark.pointpay.common.DbCleaner;
 import org.sangyunpark.pointpay.domain.order.controller.dto.request.OrderCreateRequest;
 import org.sangyunpark.pointpay.domain.order.controller.dto.response.OrderCreateResponse;
 import org.sangyunpark.pointpay.domain.order.controller.dto.response.OrderDetailResponse;
@@ -28,13 +27,23 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class OrderServiceTest extends CommonTest {
 
-    @Autowired private OrderService orderService;
-    @Autowired private UserJpaRepository userJpaRepository;
-    @Autowired private ProductJpaRepository productJpaRepository;
-    @Autowired private OrderJpaRepository orderJpaRepository;
-    @Autowired private OrderItemJpaRepository orderItemJpaRepository;
-    @Autowired private EntityManager entityManager;
-    @Autowired private DbCleaner cleaner;
+    @Autowired
+    private OrderService orderService;
+
+    @Autowired
+    private UserJpaRepository userJpaRepository;
+
+    @Autowired
+    private ProductJpaRepository productJpaRepository;
+
+    @Autowired
+    private OrderJpaRepository orderJpaRepository;
+
+    @Autowired
+    private OrderItemJpaRepository orderItemJpaRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Test
     @Transactional
@@ -156,13 +165,12 @@ class OrderServiceTest extends CommonTest {
         assertThat(p2After.getStock()).isEqualTo(p2StockBefore);
         assertThat(p3After.getStock()).isEqualTo(p3StockBefore);
 
-        // 주문/주문아이템 저장 X 확인
         assertThat(orderJpaRepository.count()).isEqualTo(0);
         assertThat(orderItemJpaRepository.count()).isEqualTo(0);
     }
 
     @AfterEach
     void clear() {
-        cleaner.clear();
+        dbCleaner.clear();
     }
 }

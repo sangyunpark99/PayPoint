@@ -1,11 +1,10 @@
 package org.sangyunpark.pointpay.domain.order.service;
 
 import jakarta.persistence.EntityManager;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.sangyunpark.pointpay.common.CommonTest;
-import org.sangyunpark.pointpay.common.DbCleaner;
 import org.sangyunpark.pointpay.domain.order.controller.dto.request.OrderCreateRequest;
 import org.sangyunpark.pointpay.domain.order.repository.OrderItemJpaRepository;
 import org.sangyunpark.pointpay.domain.order.repository.OrderJpaRepository;
@@ -44,9 +43,6 @@ public class ConcurrencyOrderServiceTest extends CommonTest {
 
     @Autowired
     private EntityManager entityManager;
-
-    @Autowired
-    private DbCleaner dbCleaner;
 
     @Test
     @DisplayName("동시에 여러 주문이 들어와도 재고는 0 미만으로 내려가지 않고 초과 판매가 발생하지 않습니다.")
@@ -117,7 +113,7 @@ public class ConcurrencyOrderServiceTest extends CommonTest {
         assertThat(orderItemCount).isEqualTo(stock);
     }
 
-    @AfterEach
+    @BeforeEach
     void clear() {
         dbCleaner.clear();
     }

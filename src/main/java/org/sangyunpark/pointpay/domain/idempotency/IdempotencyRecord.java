@@ -5,16 +5,13 @@ import java.time.LocalDateTime;
 
 public class IdempotencyRecord extends BaseEntity {
 
-    public static final int IN_PROGRESS = 0;
-    public static final int COMPLETED = 1;
-
     private int statusCode;
     private String responseBody;
-    private int status;
+    private IdempotencyStatus status;
 
     protected IdempotencyRecord() {}
 
-    private IdempotencyRecord(int statusCode, String responseBody, LocalDateTime createdAt, int status) {
+    private IdempotencyRecord(int statusCode, String responseBody, LocalDateTime createdAt, IdempotencyStatus status) {
         this.statusCode = statusCode;
         this.responseBody = responseBody;
         this.createdAt = createdAt;
@@ -26,7 +23,7 @@ public class IdempotencyRecord extends BaseEntity {
                 0,
                 "",
                 LocalDateTime.now(),
-                IN_PROGRESS
+                IdempotencyStatus.STARTED
         );
     }
 
@@ -35,7 +32,16 @@ public class IdempotencyRecord extends BaseEntity {
                 httpStatus,
                 body,
                 LocalDateTime.now(),
-                COMPLETED
+                IdempotencyStatus.SUCCESS
+        );
+    }
+
+    public static IdempotencyRecord failed(int httpStatus, String body) {
+        return new IdempotencyRecord(
+                httpStatus,
+                body,
+                LocalDateTime.now(),
+                IdempotencyStatus.FAILED
         );
     }
 
@@ -43,7 +49,7 @@ public class IdempotencyRecord extends BaseEntity {
         return this.responseBody;
     }
 
-    public int getStatus() {
+    public IdempotencyStatus getStatus() {
         return this.status;
     }
 

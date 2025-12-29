@@ -1,0 +1,9 @@
+### 주문 결제
+POST http://localhost:8080/api/point/payment
+Content-Type: application/json
+X-Idempotency-Key: {{$uuid}}
+
+{
+  "orderId": 1,
+  "userId" : 1
+}

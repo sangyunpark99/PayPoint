@@ -11,9 +11,16 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
 
     boolean existsByUsername(String username);
 
-    @Modifying
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("UPDATE User u set u.pointBalance = u.pointBalance + :amount WHERE u.id = :userId AND u.pointBalance + :amount <= :maxPoint")
-    int increasePoint(Long userId, int amount, int maxPoint); // 원자적 업데이트
+    int increasePoint(Long userId, long amount, int maxPoint); // 원자적 업데이트
+
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("UPDATE User u SET u.pointBalance = u.pointBalance - :amount WHERE u.id = :userId AND u.pointBalance - :amount >= 0")
+    int decreasePoint(Long userId, long amount);
+
+    @Query("SELECT u.pointBalance FROM User u WHERE u.id = :userId")
+    long findPointBalanceByUserId(long userId);
 
     @Query("SELECT u.id FROM User u")
     List<Long> findAllIds();

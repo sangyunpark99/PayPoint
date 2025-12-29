@@ -2,12 +2,14 @@ package org.sangyunpark.pointpay.domain.event.entity;
 
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.Getter;
 import org.sangyunpark.pointpay.common.BaseEntity;
 import org.sangyunpark.pointpay.domain.point.entity.PointType;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
 public class PointHistoryEvent extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,7 +17,9 @@ public class PointHistoryEvent extends BaseEntity {
 
     private Long userId;
 
-    private int pointAmount;
+    private long balanceBefore;
+
+    private long balanceAfter;
 
     @Enumerated(EnumType.STRING)
     private PointType pointType;
@@ -27,31 +31,12 @@ public class PointHistoryEvent extends BaseEntity {
     }
 
     @Builder
-    public PointHistoryEvent(Long userId, int pointAmount, PointType pointType, LocalDateTime createdAt) {
+    public PointHistoryEvent(Long userId, long balanceBefore, long balanceAfter, PointType pointType, LocalDateTime createdAt) {
         this.userId = userId;
-        this.pointAmount = pointAmount;
+        this.balanceBefore = balanceBefore;
+        this.balanceAfter = balanceAfter;
         this.pointType = pointType;
         this.eventStatus = EventStatus.READY;
         this.createdAt = createdAt;
-    }
-
-    public void updateEventStatus(EventStatus status) {
-        this.eventStatus = status;
-    }
-
-    public PointType getPointType() {
-        return this.pointType;
-    }
-
-    public int getAmount() {
-        return this.pointAmount;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return this.createdAt;
-    }
-
-    public long getUserId() {
-        return this.userId;
     }
 }

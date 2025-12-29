@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.sangyunpark.pointpay.domain.idempotency.IdempotencyRecord;
 import org.sangyunpark.pointpay.domain.idempotency.IdempotencyService;
+import org.sangyunpark.pointpay.domain.idempotency.IdempotencyStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -12,8 +13,6 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
-
-import static org.sangyunpark.pointpay.domain.idempotency.IdempotencyRecord.COMPLETED;
 
 public class IdempotencyInterceptor implements HandlerInterceptor {
 
@@ -46,7 +45,7 @@ public class IdempotencyInterceptor implements HandlerInterceptor {
         }
 
         Optional<IdempotencyRecord> cached = idempotencyService.find(key);
-        if(cached.isPresent() && cached.get().getStatus() == COMPLETED) {
+        if(cached.isPresent() && cached.get().getStatus().equals(IdempotencyStatus.SUCCESS)) {
             writeResponse(response, cached.get());
             return false;
         }

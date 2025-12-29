@@ -1,6 +1,7 @@
 package org.sangyunpark.pointpay.domain.product.service;
 
 import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.sangyunpark.pointpay.common.CommonTest;
@@ -125,5 +126,10 @@ class ProductServiceTest extends CommonTest {
         Field f = entity.getClass().getDeclaredField("id");
         f.setAccessible(true);
         f.set(entity,id);
+    }
+
+    @AfterEach
+    void clean() {
+        dbCleaner.clear();
     }
 }

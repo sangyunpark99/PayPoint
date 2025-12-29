@@ -23,7 +23,7 @@ public class PointHistoriesResponse {
     }
 
     public static class PointHistoryPerMonth {
-        private int pointBalance;
+        private long pointBalance;
         private PointType pointType;
         private LocalDateTime createdAt;
 
@@ -32,13 +32,13 @@ public class PointHistoriesResponse {
         }
 
         @Builder
-        public PointHistoryPerMonth(int pointBalance, PointType type, LocalDateTime createdAt) {
+        public PointHistoryPerMonth(long pointBalance, PointType pointType, LocalDateTime createdAt) {
             this.pointBalance = pointBalance;
-            this.pointType = type;
+            this.pointType = pointType;
             this.createdAt = createdAt;
         }
 
-        public int getPointBalance() {
+        public long getPointBalance() {
             return this.pointBalance;
         }
 
