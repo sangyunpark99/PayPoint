@@ -2,6 +2,7 @@ package org.sangyunpark.pointpay.domain.idempotency;
 
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.sangyunpark.pointpay.common.CommonTest;
@@ -91,6 +92,11 @@ public class IdempotencyConcurrentIntegrationTest extends CommonTest {
         em.clear();
         User reloaded = userJpaRepository.findById(userId).orElseThrow();
         assertThat(reloaded.getPointBalance()).isEqualTo(amount);
+    }
+
+    @AfterEach
+    void clean() {
+        dbCleaner.clear();
     }
 
 }
