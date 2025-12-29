@@ -19,7 +19,7 @@ public class User extends BaseEntity {
 
     private String username;
 
-    private int pointBalance;
+    private long pointBalance;
 
     @OneToMany(mappedBy = "user")
     private List<PointHistory> pointHistories = new ArrayList<>();
@@ -40,7 +40,7 @@ public class User extends BaseEntity {
         return this.id;
     }
 
-    public int getPointBalance() {
+    public long getPointBalance() {
         return this.pointBalance;
     }
 
