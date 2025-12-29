@@ -1,5 +1,10 @@
 package org.sangyunpark.pointpay.global;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import org.sangyunpark.pointpay.domain.idempotency.IdempotencyRecord;
+import org.sangyunpark.pointpay.domain.idempotency.IdempotencyRepository;
 import org.sangyunpark.pointpay.exception.BusinessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,15 +13,26 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(exception = BusinessException.class)
-    public ResponseEntity<?> handleBusinessException(final BusinessException e) {
-        return ResponseEntity.status(e.getStatusCode().value()).body(e.getMessage());
-    }
+    private static final String IDEMPOTENCY_KEY = "IDEMPOTENCY_KEY";
+    private final IdempotencyRepository idempotencyRepository;
 
     @ExceptionHandler(exception = BindException.class)
-    public ResponseEntity<?> handleBindException(final BindException e) {
+    public ResponseEntity<?> handleBindException(BindException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @ExceptionHandler(exception = BusinessException.class)
+    public ResponseEntity<?> handleBusinessException(BusinessException e, HttpServletRequest request) {
+
+        Object keyAttr = request.getAttribute(IDEMPOTENCY_KEY);
+        if (keyAttr != null) {
+            String key = keyAttr.toString();
+            IdempotencyRecord record = IdempotencyRecord.failed(e.getErrorCode().getStatus().value(), e.getMessage());
+            idempotencyRepository.complete(key, record);
+        }
+        return ResponseEntity.status(e.getStatusCode().value()).body(e.getMessage());
     }
 }
